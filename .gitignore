@@ -1,0 +1,55 @@
+# === Fichiers de Visual Studio ===
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# === Build ===
+bin/
+obj/
+*.dll
+*.exe
+*.app
+*.pdb
+*.cache
+*.ilk
+*.log
+*.csproj.user
+*.csproj.nuget.dgspec.json
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+*.vcxproj.user
+
+# === .NET ===
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+*.snupkg
+*.nupkg
+.nuget/
+
+# === .NET MAUI ===
+**/platforms/**/bin/
+**/platforms/**/obj/
+**/Resources/Raw/**/bin/
+**/Resources/Raw/**/obj/
+**/Resources/Fonts/**/bin/
+**/Resources/Fonts/**/obj/
+appicon.svg
+splashscreen.svg
+
+# === Entités générées ===
+Generated_Code/
+GeneratedMSBuildEditorConfig.editorconfig
+
+# === Configuration locale ===
+*.swp
+*~
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+Thumbs.db
+.DS_Store

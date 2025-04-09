@@ -37,10 +37,9 @@ project.assets.json
 **/Resources/Raw/**/obj/
 **/Resources/Fonts/**/bin/
 **/Resources/Fonts/**/obj/
-appicon.svg
 splashscreen.svg
 
-# === Entités générées ===
+# === Entitï¿½s gï¿½nï¿½rï¿½es ===
 Generated_Code/
 GeneratedMSBuildEditorConfig.editorconfig
 

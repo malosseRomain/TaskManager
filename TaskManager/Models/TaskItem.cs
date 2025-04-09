@@ -3,76 +3,66 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TaskManager.Models
 {
     public class TaskItem
     {
-        [Key]
-        public int Id { get; set; }  // Clé primaire
+        public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string Title { get; set; }  // Titre court de la tâche
+        public required string Title { get; set; }
 
-        public string Description { get; set; }  // Détail de la tâche
+        public required string Description { get; set; }
 
-        public DateTime DateCreation { get; set; } = DateTime.Now;  // Date de création
+        public DateTime DateCreation { get; set; } = DateTime.Now;
 
-        public DateTime? Echeance { get; set; }  // Date limite (optionnelle)
+        public DateTime? Echeance { get; set; }
 
-        [Required]
-        public TaskStatus Statut { get; set; }  // Statut de la tâche
+        public required TaskStatus Statut { get; set; }
 
-        [Required]
-        public TaskPriority Priorite { get; set; }  // Priorité
+        public required TaskPriority Priorite { get; set; }
 
-        [Required]
-        public Person Auteur { get; set; }  // Auteur de la tâche
+        public required Person Auteur { get; set; }
 
-        public Person Realisateur { get; set; }  // Réalisateur (optionnel)
+        public required Person Realisateur { get; set; }
 
-        public string Categorie { get; set; }  // Catégorie (perso, travail, projet, etc.)
+        public required string Categorie { get; set; }
 
-        public List<string> Etiquettes { get; set; } = new();  // Liste de mots-clés
+        public List<string> Etiquettes { get; set; } = new();
 
-        public List<SubTask> SousTaches { get; set; } = new();  // Liste des sous-tâches
+        public List<SubTask> SousTaches { get; set; } = new();
 
-        public List<Comment> Commentaires { get; set; } = new();  // Liste des commentaires
+        public List<Comment> Commentaires { get; set; } = new();
     }
 
     public class Person
     {
-        [Required]
-        public string Nom { get; set; }
+        public required string Nom { get; set; }
 
-        [Required]
-        public string Prenom { get; set; }
+        public required string Prenom { get; set; }
 
-        [Required, EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
     }
 
     public class SubTask
     {
-        [Required]
-        public string Title { get; set; }
+        public required string Title { get; set; }
 
         public TaskStatus Statut { get; set; }
 
-        public DateTime? Echeance { get; set; }  // Facultatif
+        public DateTime? Echeance { get; set; }
     }
 
     public class Comment
     {
-        [Required]
-        public Person Auteur { get; set; }
+        public required Person Auteur { get; set; }
 
         public DateTime Date { get; set; } = DateTime.Now;
 
-        [Required]
-        public string Contenu { get; set; }
+        public required string Contenu { get; set; }
     }
 
     public enum TaskStatus

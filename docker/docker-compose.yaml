@@ -1,0 +1,11 @@
+services:
+  mysql:
+    image: mysql:8.0.30
+    container_name: mysql-task-manager
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: taskmaster
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql

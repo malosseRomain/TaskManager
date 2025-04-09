@@ -39,7 +39,7 @@ project.assets.json
 **/Resources/Fonts/**/obj/
 splashscreen.svg
 
-# === Entit�s g�n�r�es ===
+# === Entites generees ===
 Generated_Code/
 GeneratedMSBuildEditorConfig.editorconfig
 
@@ -52,3 +52,6 @@ GeneratedMSBuildEditorConfig.editorconfig
 *.bak
 Thumbs.db
 .DS_Store
+
+# === Docker ===
+docker/*/

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManager.Models
 {
@@ -35,9 +36,11 @@ namespace TaskManager.Models
 
         public List<SubTask> SousTaches { get; set; } = new();
 
+        [NotMapped]
         public List<Comment> Commentaires { get; set; } = new();
     }
 
+    [NotMapped]
     public class Person
     {
         public required string Nom { get; set; }
@@ -47,6 +50,7 @@ namespace TaskManager.Models
         public required string Email { get; set; }
     }
 
+    [NotMapped]
     public class SubTask
     {
         public required string Title { get; set; }

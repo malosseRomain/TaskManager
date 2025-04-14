@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using TaskManager.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using TaskManager.Data;
 using TaskStatusEnum = TaskManager.Models.TaskStatus;
 using TaskPriorityEnum = TaskManager.Models.TaskPriority;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace TaskManager.ViewModels
 {
@@ -154,6 +154,7 @@ namespace TaskManager.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand ToggleNavBarCommand { get; }
         public ICommand ApplyFiltersAndSortCommand { get; }
+        public ICommand LogoutCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -162,6 +163,7 @@ namespace TaskManager.ViewModels
             SaveCommand = new Command(OnSave);
             ToggleNavBarCommand = new Command(ExecuteToggleNavBar);
             ApplyFiltersAndSortCommand = new Command(ExecuteApplyFiltersAndSort);
+            LogoutCommand = new Command(ExecuteLogout);
         }
 
         private void ExecuteToggleNavBar()
@@ -211,7 +213,7 @@ namespace TaskManager.ViewModels
                 switch (SelectedSortCriteria)
                 {
                     case "Titre":
-                        query = SelectedSortOrder == "Ascendant" 
+                        query = SelectedSortOrder == "Ascendant"
                             ? query.OrderBy(t => t.Title)
                             : query.OrderByDescending(t => t.Title);
                         break;
@@ -239,7 +241,7 @@ namespace TaskManager.ViewModels
 
                 // Exécution de la requête
                 var filteredTasks = await query.ToListAsync();
-                
+
                 // Vous pouvez ajouter ici la logique pour afficher les tâches filtrées
                 await Application.Current.MainPage.DisplayAlert("Succès", $"{filteredTasks.Count} tâches trouvées", "OK");
             }
@@ -251,10 +253,57 @@ namespace TaskManager.ViewModels
 
         private async void OnSave()
         {
-            // ... Code existant de OnSave ...
+            try
+            {
+                // Validation des données
+                if (string.IsNullOrWhiteSpace(NewTask.Title) || string.IsNullOrWhiteSpace(NewTask.Description))
+                {
+                    await Application.Current.MainPage.DisplayAlert("Erreur", "Le titre et la description sont obligatoires.", "OK");
+                    return;
+                }
+
+                // Ajouter la tâche à la base de données
+                using var context = new TaskDbContext();
+                context.Tasks.Add(NewTask);
+                await context.SaveChangesAsync();
+
+                // Afficher un message de succès
+                await Application.Current.MainPage.DisplayAlert("Succès", "Tâche ajoutée avec succès !", "OK");
+
+                // Réinitialiser le formulaire
+                EtiquettesInput = string.Empty;
+                SousTachesInput = string.Empty;
+                CommentairesInput = string.Empty;
+                OnPropertyChanged(nameof(NewTask));
+                OnPropertyChanged(nameof(EtiquettesInput));
+                OnPropertyChanged(nameof(SousTachesInput));
+                OnPropertyChanged(nameof(CommentairesInput));
+            }
+            catch (Exception ex)
+            {
+                // Gestion des erreurs
+                await Application.Current.MainPage.DisplayAlert("Erreur", $"Une erreur s'est produite : {ex.Message}", "OK");
+            }
         }
 
-        void OnPropertyChanged([CallerMemberName] string name = "") =>
+        private async void ExecuteLogout()
+        {
+            bool answer = await Application.Current.MainPage.DisplayAlert(
+                "Déconnexion",
+                "Êtes-vous sûr de vouloir vous déconnecter ?",
+                "Oui",
+                "Non");
+
+            if (answer)
+            {
+                // Redirection vers la page de login
+                await Shell.Current.GoToAsync("//LoginPage");
+            }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string name = "")
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

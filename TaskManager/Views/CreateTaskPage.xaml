@@ -12,35 +12,35 @@
             <!-- ScrollView pour le contenu de la barre de navigation -->
             <ScrollView IsVisible="{Binding NavBarWidth}">
                 <VerticalStackLayout x:Name="NavBar" BackgroundColor="#007BFF" Padding="10" Spacing="20">
-                    <Label Text="Filtres" FontSize="Large" TextColor="White" HorizontalOptions="Center" />
+                    <!-- Nom de l'utilisateur -->
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Image Source="user_icon.png" WidthRequest="30" HeightRequest="30" />
+                        <Label Text="{Binding UserName}" FontSize="Large" TextColor="White" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-                    <!-- Filtre par statut -->
+                    <!-- Section Filtres -->
+                    <Label Text="Filtres" FontSize="Large" TextColor="White" HorizontalOptions="Start" />
                     <Label Text="Statut" FontSize="Medium" TextColor="White" />
                     <Picker Title="Tous les statuts" ItemsSource="{Binding StatusList}" SelectedItem="{Binding SelectedStatus}" BackgroundColor="White" TextColor="Black" />
-
-                    <!-- Filtre par priorité -->
                     <Label Text="Priorité" FontSize="Medium" TextColor="White" />
                     <Picker Title="Toutes les priorités" ItemsSource="{Binding PriorityList}" SelectedItem="{Binding SelectedPriority}" BackgroundColor="White" TextColor="Black" />
-
-                    <!-- Filtre par catégorie -->
                     <Label Text="Catégorie" FontSize="Medium" TextColor="White" />
                     <Entry Placeholder="Entrez une catégorie" Text="{Binding FilterCategory}" BackgroundColor="White" TextColor="Black" />
-
-                    <!-- Filtre par étiquettes -->
                     <Label Text="Étiquettes" FontSize="Medium" TextColor="White" />
                     <Entry Placeholder="Entrez des étiquettes (séparées par des virgules)" Text="{Binding FilterTags}" BackgroundColor="White" TextColor="Black" />
 
-                    <!-- Tri -->
-                    <Label Text="Tri" FontSize="Medium" TextColor="White" />
+                    <!-- Section Tri -->
+                    <Label Text="Tri" FontSize="Large" TextColor="White" HorizontalOptions="Start" />
                     <Picker Title="Critère de tri" ItemsSource="{Binding SortCriteriaList}" SelectedItem="{Binding SelectedSortCriteria}" BackgroundColor="White" TextColor="Black" />
                     <Picker Title="Ordre" ItemsSource="{Binding SortOrderList}" SelectedItem="{Binding SelectedSortOrder}" BackgroundColor="White" TextColor="Black" />
 
-                    <!-- Bouton pour appliquer les filtres et le tri -->
-                    <Button Text="Appliquer" Command="{Binding ApplyFiltersAndSortCommand}" BackgroundColor="White" TextColor="#007BFF" CornerRadius="5" Margin="0,0,0,20"/>
+                    <!-- Section Déconnexion -->
+                    <Label Text="Déconnexion" FontSize="Large" TextColor="White" HorizontalOptions="Start" />
+                    <Button Text="Se déconnecter" Command="{Binding LogoutCommand}" BackgroundColor="White" TextColor="#007BFF" CornerRadius="5" />
                 </VerticalStackLayout>
             </ScrollView>
 
-            <!-- Bouton pour plier/déplier la barre de navigation (maintenant en dehors du ScrollView) -->
+            <!-- Bouton pour plier/déplier la barre de navigation -->
             <Button
                 Grid.Column="0"
                 Text="{Binding NavBarToggleText}"
@@ -55,7 +55,6 @@
                 Margin="0,10,10,0"
                 ZIndex="1" />
         </Grid>
-        
 
         <!-- Contenu principal (colonne 1) -->
         <ScrollView Grid.Column="1">

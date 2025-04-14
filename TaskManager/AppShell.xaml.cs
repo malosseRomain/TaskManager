@@ -6,7 +6,9 @@
         public AppShell()
         {
             InitializeComponent();
+            Routing.RegisterRoute("SignUpPage", typeof(SignUpPage));
             Routing.RegisterRoute("LoginPage", typeof(LoginPage));
+            Routing.RegisterRoute("CreateTaskPage", typeof(CreateTaskPage));
         }
     }
 }

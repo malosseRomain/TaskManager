@@ -25,10 +25,12 @@ namespace TaskManager.ViewModels
         }
 
         public ICommand LoginCommand { get; }
+        public ICommand NavigateToSignUpCommand { get; }
 
         public LoginViewModel()
         {
             LoginCommand = new Command(OnLogin);
+            NavigateToSignUpCommand = new Command(async () => await Shell.Current.GoToAsync("//SignUpPage"));
         }
 
         private async void OnLogin()

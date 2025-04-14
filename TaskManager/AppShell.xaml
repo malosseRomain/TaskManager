@@ -8,13 +8,23 @@
     Shell.FlyoutBehavior="Disabled"
     Title="TaskManager">
 
+    <!-- Page de connexion -->
     <ShellContent
         Title="Connexion"
         Route="LoginPage"
         ContentTemplate="{DataTemplate views:LoginPage}" />
+
+    <!-- Page de création de tâche -->
     <ShellContent
         Title="Créer une tâche"
         Route="CreateTaskPage"
         ContentTemplate="{DataTemplate views:CreateTaskPage}" />
 
+    <!-- Page de création de compte -->
+    <ShellContent
+        Title="Créer un compte"
+        Route="SignUpPage"
+        ContentTemplate="{DataTemplate views:SignUpPage}" />
+
 </Shell>
+

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TaskManager.Views.SignUpPage"
+             Title="Créer un compte">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <!-- Titre -->
+            <Label Text="Créer un compte" 
+                   FontSize="Large" 
+                   HorizontalOptions="Center" 
+                   TextColor="#007BFF" />
+
+            <!-- Champ Nom d'utilisateur -->
+            <Label Text="Nom d'utilisateur" FontSize="Medium" />
+            <Entry Placeholder="Entrez votre nom d'utilisateur" 
+                   Text="{Binding Username}" 
+                   BackgroundColor="White" 
+                   TextColor="Black" />
+
+            <!-- Champ Email -->
+            <Label Text="Email" FontSize="Medium" />
+            <Entry Placeholder="Entrez votre email" 
+                   Text="{Binding Email}" 
+                   Keyboard="Email" 
+                   BackgroundColor="White" 
+                   TextColor="Black" />
+
+            <!-- Champ Mot de passe -->
+            <Label Text="Mot de passe" FontSize="Medium" />
+            <Entry Placeholder="Entrez votre mot de passe" 
+                   Text="{Binding Password}" 
+                   IsPassword="True" 
+                   BackgroundColor="White" 
+                   TextColor="Black" />
+
+            <!-- Champ Confirmation du mot de passe -->
+            <Label Text="Confirmez le mot de passe" FontSize="Medium" />
+            <Entry Placeholder="Confirmez votre mot de passe" 
+                   Text="{Binding ConfirmPassword}" 
+                   IsPassword="True" 
+                   BackgroundColor="White" 
+                   TextColor="Black" />
+
+            <!-- Bouton Créer un compte -->
+            <Button Text="Créer un compte" 
+                    Command="{Binding SignUpCommand}" 
+                    BackgroundColor="#007BFF" 
+                    TextColor="White" 
+                    CornerRadius="5" 
+                    HeightRequest="50" />
+
+            <!-- Lien vers la page de connexion -->
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Label Text="Vous avez déjà un compte ?" />
+                <Label Text="Connectez-vous" 
+                       TextColor="#007BFF" 
+                       FontAttributes="Bold">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToLoginCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

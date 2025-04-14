@@ -4,12 +4,27 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:TaskManager"
+    xmlns:views="clr-namespace:TaskManager.Views"
     Shell.FlyoutBehavior="Disabled"
     Title="TaskManager">
 
+    <!-- Page de connexion -->
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Connexion"
+        Route="LoginPage"
+        ContentTemplate="{DataTemplate views:LoginPage}" />
+
+    <!-- Page de création de tâche -->
+    <ShellContent
+        Title="Créer une tâche"
+        Route="CreateTaskPage"
+        ContentTemplate="{DataTemplate views:CreateTaskPage}" />
+
+    <!-- Page de création de compte -->
+    <ShellContent
+        Title="Créer un compte"
+        Route="SignUpPage"
+        ContentTemplate="{DataTemplate views:SignUpPage}" />
 
 </Shell>
+

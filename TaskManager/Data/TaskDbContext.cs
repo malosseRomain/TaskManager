@@ -17,6 +17,13 @@ namespace TaskManager.Data
             options.UseMySql("server=localhost;database=taskmaster;user=root;password=root",
                 new MySqlServerVersion(new Version(8, 0, 30)));
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Déclare l'entité Comment comme keyless
+            modelBuilder.Entity<Comment>().HasNoKey();
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
-

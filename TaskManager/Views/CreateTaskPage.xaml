@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TaskManager.Views.CreateTaskPage"
+    Title="Créer une tâche"
+    BackgroundColor="#F5F5F5">
+
+    <Grid ColumnDefinitions="Auto, *">
+        <!-- Barre de navigation (colonne 0) -->
+        <Grid Grid.Column="0">
+            <!-- ScrollView pour le contenu de la barre de navigation -->
+            <ScrollView IsVisible="{Binding NavBarWidth}">
+                <VerticalStackLayout x:Name="NavBar" BackgroundColor="#007BFF" Padding="10" Spacing="20">
+                    <!-- Nom de l'utilisateur -->
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Image Source="user_icon.png" WidthRequest="30" HeightRequest="30" />
+                        <Label Text="{Binding UserName}" FontSize="Large" TextColor="White" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <!-- Section Filtres -->
+                    <Label Text="Filtres" FontSize="Large" TextColor="White" HorizontalOptions="Start" />
+                    <Label Text="Statut" FontSize="Medium" TextColor="White" />
+                    <Picker Title="Tous les statuts" ItemsSource="{Binding StatusList}" SelectedItem="{Binding SelectedStatus}" BackgroundColor="White" TextColor="Black" />
+                    <Label Text="Priorité" FontSize="Medium" TextColor="White" />
+                    <Picker Title="Toutes les priorités" ItemsSource="{Binding PriorityList}" SelectedItem="{Binding SelectedPriority}" BackgroundColor="White" TextColor="Black" />
+                    <Label Text="Catégorie" FontSize="Medium" TextColor="White" />
+                    <Entry Placeholder="Entrez une catégorie" Text="{Binding FilterCategory}" BackgroundColor="White" TextColor="Black" />
+                    <Label Text="Étiquettes" FontSize="Medium" TextColor="White" />
+                    <Entry Placeholder="Entrez des étiquettes (séparées par des virgules)" Text="{Binding FilterTags}" BackgroundColor="White" TextColor="Black" />
+
+                    <!-- Section Tri -->
+                    <Label Text="Tri" FontSize="Large" TextColor="White" HorizontalOptions="Start" />
+                    <Picker Title="Critère de tri" ItemsSource="{Binding SortCriteriaList}" SelectedItem="{Binding SelectedSortCriteria}" BackgroundColor="White" TextColor="Black" />
+                    <Picker Title="Ordre" ItemsSource="{Binding SortOrderList}" SelectedItem="{Binding SelectedSortOrder}" BackgroundColor="White" TextColor="Black" />
+
+                    <!-- Section Déconnexion -->
+                    <Label Text="Déconnexion" FontSize="Large" TextColor="White" HorizontalOptions="Start" />
+                    <Button Text="Se déconnecter" Command="{Binding LogoutCommand}" BackgroundColor="White" TextColor="#007BFF" CornerRadius="5" />
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- Bouton pour plier/déplier la barre de navigation -->
+            <Button
+                Grid.Column="0"
+                Text="{Binding NavBarToggleText}"
+                Command="{Binding ToggleNavBarCommand}"
+                BackgroundColor="#007BFF"
+                TextColor="White"
+                VerticalOptions="Start"
+                HorizontalOptions="End"
+                WidthRequest="40"
+                HeightRequest="40"
+                CornerRadius="20"
+                Margin="0,10,10,0"
+                ZIndex="1" />
+        </Grid>
+
+        <!-- Contenu principal (colonne 1) -->
+        <ScrollView Grid.Column="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+                <!-- Titre -->
+                <Label Text="Titre de la tâche" FontSize="Medium" TextColor="#333333" />
+                <Entry Placeholder="Entrez le titre" Text="{Binding NewTask.Title}" BackgroundColor="White" TextColor="Black" HeightRequest="40" />
+
+                <!-- Description -->
+                <Label Text="Description" FontSize="Medium" TextColor="#333333" />
+                <Editor Placeholder="Entrez une description" Text="{Binding NewTask.Description}" BackgroundColor="White" TextColor="Black" HeightRequest="100" />
+
+                <!-- Échéance -->
+                <Label Text="Échéance" FontSize="Medium" TextColor="#333333" />
+                <DatePicker Date="{Binding NewTask.Echeance}" BackgroundColor="White" TextColor="Black" />
+
+                <!-- Statut -->
+                <Label Text="Statut" FontSize="Medium" TextColor="#333333" />
+                <Picker Title="Sélectionnez un statut" ItemsSource="{Binding StatusList}" SelectedItem="{Binding NewTask.Statut}" BackgroundColor="White" TextColor="Black" />
+
+                <!-- Priorité -->
+                <Label Text="Priorité" FontSize="Medium" TextColor="#333333" />
+                <Picker Title="Sélectionnez une priorité" ItemsSource="{Binding PriorityList}" SelectedItem="{Binding NewTask.Priorite}" BackgroundColor="White" TextColor="Black" />
+
+                <!-- Auteur -->
+                <Label Text="Auteur" FontSize="Medium" TextColor="#333333" />
+                <Entry Placeholder="Nom de l'auteur" Text="{Binding NewTask.Auteur.Nom}" BackgroundColor="White" TextColor="Black" />
+                <Entry Placeholder="Prénom de l'auteur" Text="{Binding NewTask.Auteur.Prenom}" BackgroundColor="White" TextColor="Black" />
+                <Entry Placeholder="Email de l'auteur" Text="{Binding NewTask.Auteur.Email}" BackgroundColor="White" TextColor="Black" />
+
+                <!-- Réalisateur -->
+                <Label Text="Réalisateur" FontSize="Medium" TextColor="#333333" />
+                <Entry Placeholder="Nom du réalisateur" Text="{Binding NewTask.Realisateur.Nom}" BackgroundColor="White" TextColor="Black" />
+                <Entry Placeholder="Prénom du réalisateur" Text="{Binding NewTask.Realisateur.Prenom}" BackgroundColor="White" TextColor="Black" />
+                <Entry Placeholder="Email du réalisateur" Text="{Binding NewTask.Realisateur.Email}" BackgroundColor="White" TextColor="Black" />
+
+                <!-- Catégorie -->
+                <Label Text="Catégorie" FontSize="Medium" TextColor="#333333" />
+                <Entry Placeholder="Entrez une catégorie" Text="{Binding NewTask.Categorie}" BackgroundColor="White" TextColor="Black" />
+
+                <!-- Étiquettes -->
+                <Label Text="Étiquettes (séparées par des virgules)" FontSize="Medium" TextColor="#333333" />
+                <Entry Placeholder="Entrez des étiquettes" Text="{Binding EtiquettesInput}" BackgroundColor="White" TextColor="Black" />
+
+                <!-- Sous-tâches -->
+                <Label Text="Sous-tâches (une par ligne)" FontSize="Medium" TextColor="#333333" />
+                <Editor Placeholder="Entrez les sous-tâches" Text="{Binding SousTachesInput}" BackgroundColor="White" TextColor="Black" HeightRequest="100" />
+
+                <!-- Commentaires -->
+                <Label Text="Commentaires (une par ligne)" FontSize="Medium" TextColor="#333333" />
+                <Editor Placeholder="Entrez les commentaires" Text="{Binding CommentairesInput}" BackgroundColor="White" TextColor="Black" HeightRequest="100" />
+
+                <!-- Bouton de création -->
+                <Button Text="Créer la tâche" Command="{Binding SaveCommand}" BackgroundColor="#007BFF" TextColor="White" CornerRadius="5" HeightRequest="50" Margin="0,0,0,20"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

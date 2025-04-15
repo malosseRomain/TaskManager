@@ -12,6 +12,8 @@ namespace TaskManager.ViewModels
 {
     public class CreateTaskViewModel : INotifyPropertyChanged
     {
+        private readonly TaskDbContext _dbContext;
+
         // Propriétés pour la barre de navigation
         private double _navBarWidth = 300;
         public double NavBarWidth
@@ -158,12 +160,14 @@ namespace TaskManager.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public CreateTaskViewModel()
+        public CreateTaskViewModel(TaskDbContext dbContext)
         {
-            SaveCommand = new Command(OnSave);
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+
+            SaveCommand = new Command(async () => await OnSave());
             ToggleNavBarCommand = new Command(ExecuteToggleNavBar);
-            ApplyFiltersAndSortCommand = new Command(ExecuteApplyFiltersAndSort);
-            LogoutCommand = new Command(ExecuteLogout);
+            ApplyFiltersAndSortCommand = new Command(async () => await ExecuteApplyFiltersAndSort());
+            LogoutCommand = new Command(async () => await ExecuteLogout());
         }
 
         private void ExecuteToggleNavBar()
@@ -180,12 +184,11 @@ namespace TaskManager.ViewModels
             }
         }
 
-        private async void ExecuteApplyFiltersAndSort()
+        private async Task ExecuteApplyFiltersAndSort()
         {
             try
             {
-                using var context = new TaskDbContext();
-                var query = context.Tasks.AsQueryable();
+                var query = _dbContext.Tasks.AsQueryable();
 
                 // Application des filtres
                 if (SelectedStatus.HasValue)
@@ -251,7 +254,7 @@ namespace TaskManager.ViewModels
             }
         }
 
-        private async void OnSave()
+        private async Task OnSave()
         {
             try
             {
@@ -263,9 +266,8 @@ namespace TaskManager.ViewModels
                 }
 
                 // Ajouter la tâche à la base de données
-                using var context = new TaskDbContext();
-                context.Tasks.Add(NewTask);
-                await context.SaveChangesAsync();
+                _dbContext.Tasks.Add(NewTask);
+                await _dbContext.SaveChangesAsync();
 
                 // Afficher un message de succès
                 await Application.Current.MainPage.DisplayAlert("Succès", "Tâche ajoutée avec succès !", "OK");
@@ -286,7 +288,7 @@ namespace TaskManager.ViewModels
             }
         }
 
-        private async void ExecuteLogout()
+        private async Task ExecuteLogout()
         {
             bool answer = await Application.Current.MainPage.DisplayAlert(
                 "Déconnexion",

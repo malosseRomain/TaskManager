@@ -13,32 +13,21 @@ namespace TaskManager.Models
     public class TaskItem
     {
         public int Id { get; set; }
-
         public required string Title { get; set; }
-
         public required string Description { get; set; }
-
         public DateTime DateCreation { get; set; } = DateTime.Now;
-
         public DateTime? Echeance { get; set; }
-
         public required TaskStatus Statut { get; set; }
-
         public required TaskPriority Priorite { get; set; }
-
         public required Person Auteur { get; set; }
-
         public required Person Realisateur { get; set; }
-
         public required string Categorie { get; set; }
-
         public List<string> Etiquettes { get; set; } = new();
-
         public List<SubTask> SousTaches { get; set; } = new();
-
         [NotMapped]
         public List<Comment> Commentaires { get; set; } = new();
     }
+
 
     [NotMapped]
     public class Person

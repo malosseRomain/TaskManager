@@ -28,6 +28,9 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Margin" Value="0,0,0,15" />
         <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="Shadow">
+            <Shadow Brush="#00000020" Offset="0,2" Radius="4" />
+        </Setter>
     </Style>
 
     <!-- Style pour le bouton -->
@@ -39,6 +42,9 @@
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="HeightRequest" Value="50" />
         <Setter Property="Margin" Value="0,10,0,0" />
+        <Setter Property="Shadow">
+            <Shadow Brush="#00000030" Offset="0,3" Radius="6" />
+        </Setter>
     </Style>
 
     <!-- Style pour le lien -->
@@ -47,6 +53,29 @@
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextDecorations" Value="Underline" />
         <Setter Property="Margin" Value="5,0,0,0" />
+    </Style>
+
+    <!-- Style pour la disposition générale -->
+    <Style x:Key="SignUpLayoutStyle" TargetType="VerticalStackLayout">
+        <Setter Property="Padding" Value="30" />
+        <Setter Property="Spacing" Value="20" />
+        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+    </Style>
+
+    <!-- Style pour centrer le lien -->
+    <Style x:Key="SignUpLinkLayoutStyle" TargetType="HorizontalStackLayout">
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="Spacing" Value="5" />
+    </Style>
+
+    <!-- Style optionnel pour encadrer le formulaire -->
+    <Style x:Key="SignUpFrameStyle" TargetType="Frame">
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="BackgroundColor" Value="#FFFFFF" />
+        <Setter Property="Shadow">
+            <Shadow Brush="#00000025" Offset="0,4" Radius="8" />
+        </Setter>
     </Style>
 
 </ResourceDictionary>

@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TaskMaster.Data;
 using TaskMaster;
+using TaskMaster.Data;
+using TaskMaster.ViewModels;
+using TaskMaster.Views;
 
 public static class MauiProgram
 {
@@ -17,25 +19,41 @@ public static class MauiProgram
             });
 
         // Configuration de la base de données
-        var connectionString = "server=localhost;port=3306;database=appdb;user=root;password=root";
+        var connectionString = "server=localhost;port=3306;database=taskmaster;user=root;password=root";
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-            options.EnableSensitiveDataLogging();
-            options.EnableDetailedErrors();
         });
 
-        using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            db.Database.Migrate();
-        }
+        // Enregistrement des ViewModels
+        builder.Services.AddTransient<TasksViewModel>();
+        builder.Services.AddTransient<CreateTaskViewModel>();
+
+        // Enregistrement des Views
+        builder.Services.AddTransient<TasksPage>();
+        builder.Services.AddTransient<CreateTaskPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        var app = builder.Build();
+
+        // Migration de la base de données
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            try
+            {
+                db.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la migration de la base de données: {ex.Message}");
+            }
+        }
+
+        return app;
     }
 }
 

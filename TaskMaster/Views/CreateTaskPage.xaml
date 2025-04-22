@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TaskMaster.Views.CreateTaskPage"
+             Title="Nouvelle Tâche">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Entry Placeholder="Titre"
+                   Text="{Binding Titre}"/>
+            
+            <Editor Placeholder="Description"
+                    HeightRequest="100"
+                    Text="{Binding Description}"/>
+            
+            <DatePicker Date="{Binding DateEcheance}"
+                        Format="D"/>
+            
+            <Picker Title="Catégorie"
+                    ItemsSource="{Binding Categories}"
+                    ItemDisplayBinding="{Binding .}"
+                    SelectedItem="{Binding SelectedCategorie}"/>
+            
+            <Picker Title="Priorité"
+                    ItemsSource="{Binding Priorites}"
+                    ItemDisplayBinding="{Binding .}"
+                    SelectedItem="{Binding SelectedPriorite}"/>
+            
+            <Picker Title="Statut"
+                    ItemsSource="{Binding Statuts}"
+                    ItemDisplayBinding="{Binding .}"
+                    SelectedItem="{Binding SelectedStatut}"/>
+            
+            <Button Text="Créer la tâche"
+                    Command="{Binding CreateTaskAsyncCommand}"
+                    Clicked="OnCreateTaskClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage> 

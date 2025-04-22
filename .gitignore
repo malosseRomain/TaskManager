@@ -54,4 +54,4 @@ Thumbs.db
 .DS_Store
 
 # === Docker ===
-docker/mysql_data/
+mysql_data/

@@ -31,6 +31,9 @@
                     ItemDisplayBinding="{Binding .}"
                     SelectedItem="{Binding SelectedStatut}"/>
             
+            <Entry Placeholder="Étiquettes (séparées par des virgules)"
+                   Text="{Binding Etiquettes}"/>
+            
             <Button Text="Créer la tâche"
                     Command="{Binding CreateTaskAsyncCommand}"
                     Clicked="OnCreateTaskClicked"/>

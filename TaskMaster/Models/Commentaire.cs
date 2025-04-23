@@ -13,7 +13,7 @@ namespace TaskMaster.Models
         public int Id_Task { get; set; }
 
         [Required]
-        public int Id_User { get; set; }
+        public int Id_Auteur { get; set; }
 
         [Required]
         public string Contenu { get; set; }
@@ -22,9 +22,9 @@ namespace TaskMaster.Models
         public DateTime DateCreation { get; set; } = DateTime.Now;
 
         [ForeignKey("Id_Task")]
-        public Task Task { get; set; }
+        public TaskItem Task { get; set; }
 
-        [ForeignKey("Id_User")]
-        public User User { get; set; }
+        [ForeignKey("Id_Auteur")]
+        public User Auteur { get; set; }
     }
 }

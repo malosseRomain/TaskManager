@@ -25,6 +25,6 @@ namespace TaskMaster.Models
         [ForeignKey("Id_Createur")]
         public User Createur { get; set; }
 
-        public ICollection<Task> Tasks { get; set; }
+        public ICollection<TaskItem> Tasks { get; set; }
     }
 }

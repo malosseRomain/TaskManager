@@ -10,72 +10,101 @@ namespace TaskMaster.Data
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Models.Task> Tasks { get; set; }
-        public DbSet<SubTask> SubTasks { get; set; }
         public DbSet<Projet> Projets { get; set; }
+        public DbSet<TaskItem> Tasks { get; set; }
         public DbSet<Commentaire> Commentaires { get; set; }
+        public DbSet<SubTask> SubTasks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuration des enums comme des chaînes avec contraintes
-            modelBuilder.Entity<Models.Task>()
+            // Configuration de User
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.Id_User);
+
+            // Configuration de Projet
+            modelBuilder.Entity<Projet>()
+                .HasKey(p => p.Id_Projet);
+
+            // Configuration de TaskItem
+            modelBuilder.Entity<TaskItem>()
+                .HasKey(t => t.Id_Task);
+
+            modelBuilder.Entity<TaskItem>()
+                .Property(t => t.Titre)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<TaskItem>()
+                .Property(t => t.Description)
+                .HasMaxLength(500);
+
+            // Configuration des enums comme des chaînes
+            modelBuilder.Entity<TaskItem>()
                 .Property(t => t.Categorie)
                 .HasConversion<string>()
-                .HasMaxLength(20)
-                .HasAnnotation("CheckConstraint", "Categorie IN ('Travail', 'Personnel', 'Urgent', 'Important')");
+                .HasMaxLength(50);
 
-            modelBuilder.Entity<Models.Task>()
+            modelBuilder.Entity<TaskItem>()
                 .Property(t => t.Priorite)
                 .HasConversion<string>()
-                .HasMaxLength(20)
-                .HasAnnotation("CheckConstraint", "Priorite IN ('Basse', 'Moyenne', 'Haute', 'Critique')");
+                .HasMaxLength(20);
 
-            modelBuilder.Entity<Models.Task>()
+            modelBuilder.Entity<TaskItem>()
                 .Property(t => t.Statut)
                 .HasConversion<string>()
-                .HasMaxLength(20)
-                .HasAnnotation("CheckConstraint", "Statut IN ('Afaire', 'EnCours', 'Terminee', 'Annulee')");
+                .HasMaxLength(20);
 
-            // Configuration des relations pour Projet
-            modelBuilder.Entity<Projet>()
-                .HasOne(p => p.Createur)
+            // Configuration des relations
+            modelBuilder.Entity<TaskItem>()
+                .HasOne(t => t.Auteur)
                 .WithMany()
-                .HasForeignKey(p => p.Id_Createur)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(t => t.Id_Auteur)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Configuration des relations pour Task
-            modelBuilder.Entity<Models.Task>()
+            modelBuilder.Entity<TaskItem>()
+                .HasOne(t => t.Realisateur)
+                .WithMany()
+                .HasForeignKey(t => t.Id_Realisateur)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TaskItem>()
                 .HasOne(t => t.Projet)
                 .WithMany(p => p.Tasks)
                 .HasForeignKey(t => t.Id_Projet)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Models.Task>()
-                .HasOne(t => t.Auteur)
-                .WithMany()
-                .HasForeignKey(t => t.Id_Auteur)
+            modelBuilder.Entity<TaskItem>()
+                .HasMany(t => t.SousTaches)
+                .WithOne(st => st.TaskParent)
+                .HasForeignKey(st => st.Id_TaskParent)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Models.Task>()
-                .HasOne(t => t.Realisateur)
-                .WithMany()
-                .HasForeignKey(t => t.Id_Realisateur)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Configuration des relations pour SubTask
+            // Configuration de SubTask
             modelBuilder.Entity<SubTask>()
-                .HasOne(st => st.Task)
-                .WithMany(t => t.SubTasks)
-                .HasForeignKey(st => st.Id_Task)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasKey(st => st.Id_SubTask);
 
-            // Configuration des relations pour Commentaire
+            modelBuilder.Entity<SubTask>()
+                .Property(st => st.Titre)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<SubTask>()
+                .Property(st => st.Statut)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+
+            // Configuration de Commentaire
             modelBuilder.Entity<Commentaire>()
-                .HasOne(c => c.User)
+                .HasKey(c => c.Id_Commentaire);
+
+            modelBuilder.Entity<Commentaire>()
+                .Property(c => c.Contenu)
+                .HasMaxLength(500);
+
+            modelBuilder.Entity<Commentaire>()
+                .HasOne(c => c.Auteur)
                 .WithMany(u => u.Commentaires)
-                .HasForeignKey(c => c.Id_User)
+                .HasForeignKey(c => c.Id_Auteur)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Commentaire>()

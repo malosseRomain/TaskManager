@@ -13,14 +13,14 @@ namespace TaskMaster.Models
         public string Titre { get; set; }
 
         [Required]
-        public int Id_Task { get; set; }
+        public int Id_TaskParent { get; set; }
 
         [Required]
         public TaskStatus Statut { get; set; }
 
         public DateTime? Echeance { get; set; }
 
-        [ForeignKey("Id_Task")]
-        public Task Task { get; set; }
+        [ForeignKey("Id_TaskParent")]
+        public TaskItem TaskParent { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace TaskMaster.Views
 
         private async void OnTaskSelected(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection.FirstOrDefault() is Models.Task selectedTask)
+            if (e.CurrentSelection.FirstOrDefault() is TaskItem selectedTask)
             {
                 try
                 {
@@ -36,6 +36,15 @@ namespace TaskMaster.Views
                 {
                     await DisplayAlert("Erreur", "Impossible de naviguer vers les détails de la tâche : " + ex.Message, "OK");
                 }
+            }
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            if (BindingContext is TasksViewModel viewModel)
+            {
+                await viewModel.LoadTasksAsync();
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Controls;
 using System;
+using TaskMaster.Services;
 
 namespace TaskMaster
 {
@@ -9,12 +10,12 @@ namespace TaskMaster
 
         public IServiceProvider Services { get; }
 
-        public App(IServiceProvider services)
+        public App(IServiceProvider services, IAuthService authService)
         {
             InitializeComponent();
             Services = services;
 
-            MainPage = new AppShell();
+            MainPage = new AppShell(authService);
         }
     }
 }

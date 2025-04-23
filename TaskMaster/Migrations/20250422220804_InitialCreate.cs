@@ -67,20 +67,23 @@ namespace TaskMaster.Migrations
                 {
                     Id_Task = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Titre = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    Titre = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Echeance = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    Description = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    Description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DateCreation = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Categorie = table.Column<int>(type: "int", nullable: false),
-                    Priorite = table.Column<int>(type: "int", nullable: false),
-                    Statut = table.Column<int>(type: "int", nullable: false),
-                    Id_Auteur = table.Column<int>(type: "int", nullable: false),
-                    Id_Realisateur = table.Column<int>(type: "int", nullable: false),
+                    Echeance = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Categorie = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Priorite = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Statut = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Etiquettes = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Id_Projet = table.Column<int>(type: "int", nullable: true),
-                    Etiquettes = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    Id_Auteur = table.Column<int>(type: "int", nullable: false),
+                    Id_Realisateur = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,13 +99,13 @@ namespace TaskMaster.Migrations
                         column: x => x.Id_Auteur,
                         principalTable: "Users",
                         principalColumn: "Id_User",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Tasks_Users_Id_Realisateur",
                         column: x => x.Id_Realisateur,
                         principalTable: "Users",
                         principalColumn: "Id_User",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -113,8 +116,8 @@ namespace TaskMaster.Migrations
                     Id_Commentaire = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Id_Task = table.Column<int>(type: "int", nullable: false),
-                    Id_User = table.Column<int>(type: "int", nullable: false),
-                    Contenu = table.Column<string>(type: "longtext", nullable: false)
+                    Id_Auteur = table.Column<int>(type: "int", nullable: false),
+                    Contenu = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DateCreation = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
@@ -128,8 +131,8 @@ namespace TaskMaster.Migrations
                         principalColumn: "Id_Task",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Commentaires_Users_Id_User",
-                        column: x => x.Id_User,
+                        name: "FK_Commentaires_Users_Id_Auteur",
+                        column: x => x.Id_Auteur,
                         principalTable: "Users",
                         principalColumn: "Id_User",
                         onDelete: ReferentialAction.Cascade);
@@ -142,18 +145,19 @@ namespace TaskMaster.Migrations
                 {
                     Id_SubTask = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Titre = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    Titre = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Id_Task = table.Column<int>(type: "int", nullable: false),
-                    Statut = table.Column<int>(type: "int", nullable: false),
+                    Id_TaskParent = table.Column<int>(type: "int", nullable: false),
+                    Statut = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Echeance = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubTasks", x => x.Id_SubTask);
                     table.ForeignKey(
-                        name: "FK_SubTasks_Tasks_Id_Task",
-                        column: x => x.Id_Task,
+                        name: "FK_SubTasks_Tasks_Id_TaskParent",
+                        column: x => x.Id_TaskParent,
                         principalTable: "Tasks",
                         principalColumn: "Id_Task",
                         onDelete: ReferentialAction.Cascade);
@@ -161,14 +165,14 @@ namespace TaskMaster.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Commentaires_Id_Auteur",
+                table: "Commentaires",
+                column: "Id_Auteur");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Commentaires_Id_Task",
                 table: "Commentaires",
                 column: "Id_Task");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Commentaires_Id_User",
-                table: "Commentaires",
-                column: "Id_User");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projets_Id_Createur",
@@ -176,9 +180,9 @@ namespace TaskMaster.Migrations
                 column: "Id_Createur");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubTasks_Id_Task",
+                name: "IX_SubTasks_Id_TaskParent",
                 table: "SubTasks",
-                column: "Id_Task");
+                column: "Id_TaskParent");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_Id_Auteur",

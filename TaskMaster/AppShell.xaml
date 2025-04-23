@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Shell
     x:Class="TaskMaster.AppShell"
+    x:Name="shell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:TaskMaster"
     xmlns:views="clr-namespace:TaskMaster.Views"
-    Shell.FlyoutBehavior="Flyout"
-    Title="TaskMaster">
+    Shell.FlyoutBehavior="Flyout">
 
-    <ShellContent
-        Title="Accueil"
-        ContentTemplate="{DataTemplate views:TasksPage}"
-        Route="TasksPage" />
+    <Shell.FlyoutHeader>
+        <Label Text="TaskMaster" 
+               FontSize="24" 
+               FontAttributes="Bold"
+               Padding="10"/>
+    </Shell.FlyoutHeader>
 
-    <ShellContent
-        Title="Nouvelle Tâche"
-        ContentTemplate="{DataTemplate views:CreateTaskPage}"
-        Route="CreateTaskPage" />
+    <!-- Menu pour les utilisateurs non connectés -->
+    <FlyoutItem IsVisible="{Binding Source={x:Reference shell}, Path=BindingContext.IsNotAuthenticated}">
+        <ShellContent Title="Connexion" 
+                     ContentTemplate="{DataTemplate views:LoginPage}"
+                     Route="LoginPage"/>
+
+        <ShellContent Title="Inscription" 
+                     ContentTemplate="{DataTemplate views:RegisterPage}"
+                     Route="RegisterPage"/>
+    </FlyoutItem>
+
+    <!-- Menu pour les utilisateurs connectés -->
+    <FlyoutItem IsVisible="{Binding Source={x:Reference shell}, Path=BindingContext.IsAuthenticated}">
+        <ShellContent Title="Mes Tâches" 
+                     ContentTemplate="{DataTemplate views:TasksPage}"
+                     Route="TasksPage"/>
+
+        <ShellContent Title="Nouvelle Tâche" 
+                     ContentTemplate="{DataTemplate views:CreateTaskPage}"
+                     Route="CreateTaskPage"/>
+    </FlyoutItem>
 
 </Shell>

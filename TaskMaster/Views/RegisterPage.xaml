@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TaskMaster.Views.RegisterPage"
+             Title="Inscription">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Créer un compte"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+            
+            <Entry Placeholder="Nom"
+                   Text="{Binding Nom}"/>
+            
+            <Entry Placeholder="Prénom"
+                   Text="{Binding Prenom}"/>
+            
+            <Entry Placeholder="Email"
+                   Text="{Binding Email}"
+                   Keyboard="Email"/>
+            
+            <Entry Placeholder="Mot de passe"
+                   Text="{Binding Password}"
+                   IsPassword="True"/>
+            
+            <Entry Placeholder="Confirmer le mot de passe"
+                   Text="{Binding ConfirmPassword}"
+                   IsPassword="True"/>
+            
+            <Button Text="S'inscrire"
+                    Command="{Binding RegisterCommand}"/>
+            
+            <Button Text="Déjà un compte ? Se connecter"
+                    Command="{Binding NavigateToLoginCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage> 

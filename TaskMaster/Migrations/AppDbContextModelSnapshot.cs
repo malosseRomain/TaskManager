@@ -32,22 +32,23 @@ namespace TaskMaster.Migrations
 
                     b.Property<string>("Contenu")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("Id_Task")
+                    b.Property<int>("Id_Auteur")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id_User")
+                    b.Property<int>("Id_Task")
                         .HasColumnType("int");
 
                     b.HasKey("Id_Commentaire");
 
-                    b.HasIndex("Id_Task");
+                    b.HasIndex("Id_Auteur");
 
-                    b.HasIndex("Id_User");
+                    b.HasIndex("Id_Task");
 
                     b.ToTable("Commentaires");
                 });
@@ -94,25 +95,27 @@ namespace TaskMaster.Migrations
                     b.Property<DateTime?>("Echeance")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("Id_Task")
+                    b.Property<int>("Id_TaskParent")
                         .HasColumnType("int");
 
-                    b.Property<int>("Statut")
-                        .HasColumnType("int");
+                    b.Property<string>("Statut")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Titre")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id_SubTask");
 
-                    b.HasIndex("Id_Task");
+                    b.HasIndex("Id_TaskParent");
 
                     b.ToTable("SubTasks");
                 });
 
-            modelBuilder.Entity("TaskMaster.Models.Task", b =>
+            modelBuilder.Entity("TaskMaster.Models.TaskItem", b =>
                 {
                     b.Property<int>("Id_Task")
                         .ValueGeneratedOnAdd()
@@ -122,24 +125,24 @@ namespace TaskMaster.Migrations
 
                     b.Property<string>("Categorie")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasAnnotation("CheckConstraint", "Categorie IN ('Travail', 'Personnel', 'Urgent', 'Important')");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<DateTime?>("Echeance")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Etiquettes")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<int>("Id_Auteur")
                         .HasColumnType("int");
@@ -153,19 +156,17 @@ namespace TaskMaster.Migrations
                     b.Property<string>("Priorite")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasAnnotation("CheckConstraint", "Priorite IN ('Basse', 'Moyenne', 'Haute', 'Critique')");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Statut")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasAnnotation("CheckConstraint", "Statut IN ('Afaire', 'EnCours', 'Terminee', 'Annulee')");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Titre")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id_Task");
 
@@ -213,21 +214,21 @@ namespace TaskMaster.Migrations
 
             modelBuilder.Entity("TaskMaster.Models.Commentaire", b =>
                 {
-                    b.HasOne("TaskMaster.Models.Task", "Task")
+                    b.HasOne("TaskMaster.Models.User", "Auteur")
+                        .WithMany("Commentaires")
+                        .HasForeignKey("Id_Auteur")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskMaster.Models.TaskItem", "Task")
                         .WithMany("Commentaires")
                         .HasForeignKey("Id_Task")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskMaster.Models.User", "User")
-                        .WithMany("Commentaires")
-                        .HasForeignKey("Id_User")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Auteur");
 
                     b.Navigation("Task");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TaskMaster.Models.Projet", b =>
@@ -243,21 +244,21 @@ namespace TaskMaster.Migrations
 
             modelBuilder.Entity("TaskMaster.Models.SubTask", b =>
                 {
-                    b.HasOne("TaskMaster.Models.Task", "Task")
-                        .WithMany("SubTasks")
-                        .HasForeignKey("Id_Task")
+                    b.HasOne("TaskMaster.Models.TaskItem", "TaskParent")
+                        .WithMany("SousTaches")
+                        .HasForeignKey("Id_TaskParent")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Task");
+                    b.Navigation("TaskParent");
                 });
 
-            modelBuilder.Entity("TaskMaster.Models.Task", b =>
+            modelBuilder.Entity("TaskMaster.Models.TaskItem", b =>
                 {
                     b.HasOne("TaskMaster.Models.User", "Auteur")
                         .WithMany()
                         .HasForeignKey("Id_Auteur")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TaskMaster.Models.Projet", "Projet")
@@ -268,7 +269,7 @@ namespace TaskMaster.Migrations
                     b.HasOne("TaskMaster.Models.User", "Realisateur")
                         .WithMany()
                         .HasForeignKey("Id_Realisateur")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Auteur");
@@ -283,11 +284,11 @@ namespace TaskMaster.Migrations
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("TaskMaster.Models.Task", b =>
+            modelBuilder.Entity("TaskMaster.Models.TaskItem", b =>
                 {
                     b.Navigation("Commentaires");
 
-                    b.Navigation("SubTasks");
+                    b.Navigation("SousTaches");
                 });
 
             modelBuilder.Entity("TaskMaster.Models.User", b =>

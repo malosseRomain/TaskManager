@@ -4,6 +4,7 @@ using TaskMaster;
 using TaskMaster.Data;
 using TaskMaster.ViewModels;
 using TaskMaster.Views;
+using TaskMaster.Services;
 
 public static class MauiProgram
 {
@@ -19,19 +20,26 @@ public static class MauiProgram
             });
 
         // Configuration de la base de données
-        var connectionString = "server=localhost;port=3306;database=taskmaster;user=root;password=root";
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            options.UseMySql(
+                "server=localhost;port=3306;user=root;password=root;database=taskmaster",
+                ServerVersion.AutoDetect("server=localhost;port=3306;user=root;password=root;database=taskmaster")
+            );
         });
 
-        // Enregistrement des ViewModels
+        // Enregistrement des services
+        builder.Services.AddSingleton<IAuthService, AuthService>();
         builder.Services.AddTransient<TasksViewModel>();
         builder.Services.AddTransient<CreateTaskViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<RegisterViewModel>();
 
-        // Enregistrement des Views
+        // Enregistrement des pages
         builder.Services.AddTransient<TasksPage>();
         builder.Services.AddTransient<CreateTaskPage>();
+        builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<RegisterPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

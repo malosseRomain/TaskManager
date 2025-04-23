@@ -3,13 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using TaskMaster.Models;
 using TaskMaster.Data;
 using TaskStatus = TaskMaster.Models.TaskStatus;
-using Task = TaskMaster.Models.Task;
+using TaskMaster.Services;
 
 namespace TaskMaster.ViewModels
 {
     public partial class CreateTaskViewModel : ObservableObject
     {
         private readonly AppDbContext _context;
+        private readonly IAuthService _authService;
 
         [ObservableProperty]
         private string titre;
@@ -29,24 +30,35 @@ namespace TaskMaster.ViewModels
         [ObservableProperty]
         private string selectedStatut;
 
+        [ObservableProperty]
+        private string etiquettes = string.Empty;
+
         public List<string> Categories { get; } = Enum.GetNames(typeof(TaskCategory)).ToList();
         public List<string> Priorites { get; } = Enum.GetNames(typeof(TaskPriority)).ToList();
         public List<string> Statuts { get; } = Enum.GetNames(typeof(TaskStatus)).ToList();
 
-        public CreateTaskViewModel(AppDbContext context)
+        public CreateTaskViewModel(AppDbContext context, IAuthService authService)
         {
             _context = context;
+            _authService = authService;
             SelectedCategorie = TaskCategory.Travail.ToString();
             SelectedPriorite = TaskPriority.Moyenne.ToString();
             SelectedStatut = TaskStatus.Afaire.ToString();
         }
 
         [RelayCommand]
-        public async System.Threading.Tasks.Task CreateTaskAsync()
+        public async Task CreateTaskAsync()
         {
             try
             {
-                var task = new Task
+                var currentUser = _authService.CurrentUser;
+                if (currentUser == null)
+                {
+                    await Shell.Current.DisplayAlert("Erreur", "Vous devez être connecté pour créer une tâche", "OK");
+                    return;
+                }
+
+                var task = new TaskItem
                 {
                     Titre = Titre,
                     Description = Description,
@@ -55,14 +67,16 @@ namespace TaskMaster.ViewModels
                     Priorite = Enum.Parse<TaskPriority>(SelectedPriorite),
                     Statut = Enum.Parse<TaskStatus>(SelectedStatut),
                     DateCreation = DateTime.Now,
-                    Id_Auteur = 2, // TODO: Remplacer par l'ID de l'utilisateur connecté
-                    Id_Realisateur = 2 // TODO: Remplacer par l'ID de l'utilisateur connecté
+                    Id_Auteur = currentUser.Id_User,
+                    Id_Realisateur = currentUser.Id_User,
+                    Etiquettes = Etiquettes
                 };
 
                 _context.Tasks.Add(task);
                 await _context.SaveChangesAsync();
 
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.DisplayAlert("Succès", "Tâche créée avec succès !", "OK");
+                await Shell.Current.GoToAsync("//TasksPage");
             }
             catch (Exception ex)
             {

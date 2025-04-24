@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:TaskMaster.ViewModels"
+             x:Class="TaskMaster.Views.ProjectDetailsPage"
+             Title="Détails du projet">
+    
+    <VerticalStackLayout Padding="20" Spacing="10">
+        <Label Text="{Binding Projet.Nom}"
+               FontSize="24"
+               FontAttributes="Bold"/>
+        
+        <Label Text="{Binding Projet.Description}"
+               FontSize="16"/>
+        
+        <Label Text="{Binding Projet.DateCreation, StringFormat='Créé le {0:d}'}"
+               FontSize="14"
+               TextColor="Gray"/>
+        
+        <Button Text="Créer une tâche"
+                Command="{Binding CreerTacheCommand}"/>
+        
+        <CollectionView ItemsSource="{Binding Taches}"
+                       SelectionMode="Single"
+                       SelectionChangedCommand="{Binding NaviguerVersTacheCommand}"
+                       SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0,5" Padding="15">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Titre}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"/>
+                            
+                            <Label Text="{Binding Description}"
+                                   FontSize="14"/>
+                            
+                            <Label Text="{Binding Echeance, StringFormat='Échéance : {0:d}'}"
+                                   FontSize="12"
+                                   TextColor="Gray"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage> 

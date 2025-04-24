@@ -34,12 +34,14 @@ public static class MauiProgram
         builder.Services.AddTransient<CreateTaskViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
+        builder.Services.AddTransient<ProjectsViewModel>();
 
         // Enregistrement des pages
         builder.Services.AddTransient<TasksPage>();
         builder.Services.AddTransient<CreateTaskPage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
+        builder.Services.AddTransient<ProjectsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

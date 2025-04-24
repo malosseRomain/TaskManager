@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:TaskMaster.ViewModels"
+             x:Class="TaskMaster.Views.ProjectsPage"
+             Title="Projets">
+    
+    <Grid RowDefinitions="Auto,*">
+        <!-- Formulaire de création de projet -->
+        <Frame Grid.Row="0" Margin="20,20,20,0" Padding="15">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Nouveau Projet"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+                
+                <Entry Placeholder="Nom du projet"
+                       Text="{Binding NouveauProjetNom}"/>
+                
+                <Editor Placeholder="Description"
+                        HeightRequest="100"
+                        Text="{Binding NouveauProjetDescription}"/>
+                
+                <Button Text="Créer le projet"
+                        Command="{Binding CreerProjetAsyncCommand}"
+                        Clicked="OnCreateProjectClicked"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Liste des projets -->
+        <ScrollView Grid.Row="1" Margin="20,10,20,20">
+            <CollectionView ItemsSource="{Binding Projets}"
+                           SelectionMode="Single"
+                           SelectionChangedCommand="{Binding NaviguerVersProjetCommand}"
+                           SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,5" Padding="15">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Nom}"
+                                       FontSize="16"
+                                       FontAttributes="Bold"/>
+                                
+                                <Label Text="{Binding Description}"
+                                       FontSize="14"/>
+                                
+                                <Label Text="{Binding DateCreation, StringFormat='Créé le {0:d}'}"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+    </Grid>
+</ContentPage> 

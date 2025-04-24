@@ -28,7 +28,7 @@
             
             <Picker Title="Statut"
                     ItemsSource="{Binding Statuts}"
-                    ItemDisplayBinding="{Binding .}"
+                    ItemDisplayBinding="{Binding DisplayText}"
                     SelectedItem="{Binding SelectedStatut}"/>
             
             <Entry Placeholder="Étiquettes (séparées par des virgules)"

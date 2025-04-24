@@ -28,14 +28,14 @@ namespace TaskMaster.ViewModels
         private string selectedPriorite;
 
         [ObservableProperty]
-        private string selectedStatut;
+        private StatusDisplay selectedStatut;
 
         [ObservableProperty]
         private string etiquettes = string.Empty;
 
         public List<string> Categories { get; } = Enum.GetNames(typeof(TaskCategory)).ToList();
         public List<string> Priorites { get; } = Enum.GetNames(typeof(TaskPriority)).ToList();
-        public List<string> Statuts { get; } = Enum.GetNames(typeof(TaskStatus)).ToList();
+        public List<StatusDisplay> Statuts { get; } = StatusDisplay.GetStatusDisplays();
 
         public CreateTaskViewModel(AppDbContext context, IAuthService authService)
         {
@@ -43,7 +43,7 @@ namespace TaskMaster.ViewModels
             _authService = authService;
             SelectedCategorie = TaskCategory.Travail.ToString();
             SelectedPriorite = TaskPriority.Moyenne.ToString();
-            SelectedStatut = TaskStatus.Afaire.ToString();
+            SelectedStatut = Statuts.First(s => s.Value == TaskStatus.Afaire.ToString());
         }
 
         [RelayCommand]
@@ -65,7 +65,7 @@ namespace TaskMaster.ViewModels
                     Echeance = DateEcheance,
                     Categorie = Enum.Parse<TaskCategory>(SelectedCategorie),
                     Priorite = Enum.Parse<TaskPriority>(SelectedPriorite),
-                    Statut = Enum.Parse<TaskStatus>(SelectedStatut),
+                    Statut = Enum.Parse<TaskStatus>(SelectedStatut.Value),
                     DateCreation = DateTime.Now,
                     Id_Auteur = currentUser.Id_User,
                     Id_Realisateur = currentUser.Id_User,

@@ -52,7 +52,7 @@
                                        FontSize="12"/>
                             </VerticalStackLayout>
                             <Label Grid.Column="1"
-                                   Text="{Binding Statut}"
+                                   Text="{Binding StatutDisplay}"
                                    FontSize="12"
                                    HorizontalOptions="End"/>
                         </Grid>

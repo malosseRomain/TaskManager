@@ -20,7 +20,7 @@ public partial class AppShell : Shell
         _authService.AuthStateChanged += OnAuthStateChanged;
         BindingContext = this;
 
-        // Enregistrez la route pour la modification
+        // Garder uniquement l'enregistrement de la route
         Routing.RegisterRoute("ModifyTaskPage", typeof(ModifyTaskPage));
     }
 

@@ -35,10 +35,6 @@
             <ShellContent Title="Nouvelle Tâche" 
                          ContentTemplate="{DataTemplate views:CreateTaskPage}"
                          Route="CreateTaskPage"/>
-                         
-            <ShellContent Title="Modifier Tâche" 
-                         ContentTemplate="{DataTemplate views:ModifyTaskPage}"
-                         Route="ModifyTaskPage"/>
         </Tab>
     </FlyoutItem>
 

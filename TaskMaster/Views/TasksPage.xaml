@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TaskMaster.ViewModels"
              x:Class="TaskMaster.Views.TasksPage"
              Title="Mes Tâches">
     
@@ -41,7 +42,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame Margin="10" Padding="10">
-                        <Grid ColumnDefinitions="*, Auto">
+                        <Grid ColumnDefinitions="*, Auto, Auto">
                             <VerticalStackLayout>
                                 <Label Text="{Binding Titre}"
                                        FontSize="16"
@@ -51,10 +52,17 @@
                                 <Label Text="{Binding Echeance, StringFormat='Échéance: {0:dd/MM/yyyy}'}"
                                        FontSize="12"/>
                             </VerticalStackLayout>
-                            <Label Grid.Column="1"
-                                   Text="{Binding Statut}"
-                                   FontSize="12"
-                                   HorizontalOptions="End"/>
+                            
+                            <HorizontalStackLayout Grid.Column="1" Spacing="5">
+                                <Button Text="Modifier"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:TasksViewModel}}, Path=ModifyTaskCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="LightBlue"/>
+                                <Button Text="Supprimer"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:TasksViewModel}}, Path=DeleteTaskCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="LightCoral"/>
+                            </HorizontalStackLayout>
                         </Grid>
                     </Frame>
                 </DataTemplate>

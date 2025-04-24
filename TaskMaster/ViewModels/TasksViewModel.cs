@@ -80,5 +80,48 @@ namespace TaskMaster.ViewModels
                 // TODO: Naviguer vers la page de détails de la tâche
             }
         }
+
+        [RelayCommand]
+        private async Task DeleteTaskAsync(TaskItem task)
+        {
+            if (task != null)
+            {
+                bool confirm = await Shell.Current.DisplayAlert("Confirmation", "Voulez-vous vraiment supprimer cette tâche ?", "Oui", "Non");
+                if (confirm)
+                {
+                    try
+                    {
+                        _context.Tasks.Remove(task);
+                        await _context.SaveChangesAsync();
+                        await LoadTasksAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await Shell.Current.DisplayAlert("Erreur", "Impossible de supprimer la tâche : " + ex.Message, "OK");
+                    }
+                }
+            }
+        }
+
+        [RelayCommand]
+        private async Task ModifyTaskAsync(TaskItem task)
+        {
+            if (task == null)
+                return;
+
+            try
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    { "taskId", task.Id_Task }
+                };
+                
+                await Shell.Current.GoToAsync($"ModifyTaskPage", parameters);
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Erreur", $"Impossible d'ouvrir la page de modification : {ex.Message}", "OK");
+            }
+        }
     }
 } 

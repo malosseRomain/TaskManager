@@ -9,5 +9,14 @@ namespace TaskMaster.Views
             InitializeComponent();
             BindingContext = viewModel;
         }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            if (BindingContext is ProjectDetailsViewModel viewModel)
+            {
+                await viewModel.LoadProjectAsync(viewModel.Projet.Id_Projet);
+            }
+        }
     }
 } 

@@ -32,6 +32,11 @@
                     ItemDisplayBinding="{Binding DisplayText}"
                     SelectedItem="{Binding SelectedStatut}"/>
 
+            <Picker Title="Projet (optionnel)"
+                    ItemsSource="{Binding Projets}"
+                    ItemDisplayBinding="{Binding Nom}"
+                    SelectedItem="{Binding SelectedProjet}"/>
+            
             <Picker Title="Assigner à"
                     ItemsSource="{Binding Utilisateurs}"
                     ItemDisplayBinding="{Binding DisplayName}"

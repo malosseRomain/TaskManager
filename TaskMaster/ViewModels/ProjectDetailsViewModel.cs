@@ -53,8 +53,9 @@ namespace TaskMaster.ViewModels
         [RelayCommand]
         private async Task NaviguerVersTache(TaskItem tache)
         {
-            if (tache == null) return;
-            await Shell.Current.GoToAsync($"//TaskDetailsPage?taskId={tache.Id_Task}");
+            // Temporairement désactivé
+            // if (tache == null) return;
+            // await Shell.Current.GoToAsync($"//TaskDetailsPage?taskId={tache.Id_Task}");
         }
     }
 } 

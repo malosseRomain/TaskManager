@@ -6,6 +6,7 @@ using TaskStatus = TaskMaster.Models.TaskStatus;
 using TaskMaster.Services;
 using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
+using TaskMaster.Views;
 
 namespace TaskMaster.ViewModels
 {
@@ -42,6 +43,12 @@ namespace TaskMaster.ViewModels
         private ObservableCollection<CommentViewModel> commentaires = new();
 
         [ObservableProperty]
+        private ObservableCollection<Projet> projets = new();
+
+        [ObservableProperty]
+        private Projet selectedProjet;
+
+        [ObservableProperty]
         private ObservableCollection<UserDisplay> utilisateurs = new();
 
         [ObservableProperty]
@@ -56,7 +63,24 @@ namespace TaskMaster.ViewModels
             _context = context;
             _authService = authService;
             InitialiserFormulaire();
+            ChargerProjets();
             ChargerUtilisateurs();
+        }
+
+        private async void ChargerProjets()
+        {
+            var currentUser = _authService.CurrentUser;
+            if (currentUser == null) return;
+
+            var projets = await _context.Projets
+                .Where(p => p.Id_Createur == currentUser.Id_User)
+                .ToListAsync();
+
+            Projets.Clear();
+            foreach (var projet in projets)
+            {
+                Projets.Add(projet);
+            }
         }
 
         private async void ChargerUtilisateurs()
@@ -84,6 +108,7 @@ namespace TaskMaster.ViewModels
             Etiquettes = string.Empty;
             SousTaches.Clear();
             Commentaires.Clear();
+            SelectedProjet = null;
             SelectedUtilisateur = null;
         }
 
@@ -133,8 +158,9 @@ namespace TaskMaster.ViewModels
                     Statut = Enum.Parse<TaskStatus>(SelectedStatut.Value),
                     DateCreation = DateTime.Now,
                     Id_Auteur = currentUser.Id_User,
-                    Id_Realisateur = SelectedUtilisateur?.Id ?? currentUser.Id_User,
+                    Id_Realisateur = currentUser.Id_User,
                     Etiquettes = Etiquettes,
+                    Id_Projet = SelectedProjet?.Id_Projet,
                     SousTaches = SousTaches.Select(st => new SubTask
                     {
                         Titre = st.Titre,
@@ -154,7 +180,19 @@ namespace TaskMaster.ViewModels
 
                 await Shell.Current.DisplayAlert("Succès", "Tâche créée avec succès !", "OK");
                 InitialiserFormulaire();
-                await Shell.Current.GoToAsync("//TasksPage");
+
+                if (SelectedProjet != null)
+                {
+                    await Shell.Current.GoToAsync($"//ProjectsPage");
+                    var viewModel = new ProjectDetailsViewModel(_context, _authService);
+                    await viewModel.LoadProjectAsync(SelectedProjet.Id_Projet);
+                    var page = new ProjectDetailsPage(viewModel);
+                    await Shell.Current.Navigation.PushAsync(page);
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync("//TasksPage");
+                }
             }
             catch (Exception ex)
             {

@@ -36,6 +36,8 @@ public static class MauiProgram
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<ModifyTaskPage>();
         builder.Services.AddTransient<ModifyTaskViewModel>();
+        builder.Services.AddTransient<TaskDetailsPage>();
+        builder.Services.AddTransient<TaskDetailsViewModel>();
 
         // Enregistrement des pages
         builder.Services.AddTransient<TasksPage>();

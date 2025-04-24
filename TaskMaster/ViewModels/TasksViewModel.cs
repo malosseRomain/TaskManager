@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using TaskMaster.Models;
 using TaskMaster.Data;
 using TaskMaster.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskMaster.ViewModels
 {
@@ -121,6 +122,26 @@ namespace TaskMaster.ViewModels
             catch (Exception ex)
             {
                 await Shell.Current.DisplayAlert("Erreur", $"Impossible d'ouvrir la page de modification : {ex.Message}", "OK");
+            }
+        }
+
+        [RelayCommand]
+        private async Task ViewDetailsAsync(TaskItem task)
+        {
+            if (task == null)
+                return;
+
+            try
+            {
+                var parameters = new Dictionary<string, object>
+                {
+                    { "taskId", task.Id_Task }
+                };
+                await Shell.Current.GoToAsync($"TaskDetailsPage", parameters);
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Erreur", $"Impossible d'afficher les détails : {ex.Message}", "OK");
             }
         }
     }

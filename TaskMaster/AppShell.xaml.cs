@@ -22,6 +22,7 @@ public partial class AppShell : Shell
 
         // Garder uniquement l'enregistrement de la route
         Routing.RegisterRoute("ModifyTaskPage", typeof(ModifyTaskPage));
+        Routing.RegisterRoute("TaskDetailsPage", typeof(TaskDetailsPage));
     }
 
     private void OnAuthStateChanged(object? sender, EventArgs e)

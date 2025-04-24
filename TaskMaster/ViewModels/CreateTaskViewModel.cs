@@ -45,9 +45,19 @@ namespace TaskMaster.ViewModels
         {
             _context = context;
             _authService = authService;
+            InitialiserFormulaire();
+        }
+
+        private void InitialiserFormulaire()
+        {
+            Titre = string.Empty;
+            Description = string.Empty;
+            DateEcheance = DateTime.Now.AddDays(7);
             SelectedCategorie = TaskCategory.Travail.ToString();
             SelectedPriorite = TaskPriority.Moyenne.ToString();
             SelectedStatut = Statuts.First(s => s.Value == TaskStatus.Afaire.ToString());
+            Etiquettes = string.Empty;
+            SousTaches.Clear();
         }
 
         [RelayCommand]
@@ -98,6 +108,7 @@ namespace TaskMaster.ViewModels
                 await _context.SaveChangesAsync();
 
                 await Shell.Current.DisplayAlert("Succès", "Tâche créée avec succès !", "OK");
+                InitialiserFormulaire();
                 await Shell.Current.GoToAsync("//TasksPage");
             }
             catch (Exception ex)

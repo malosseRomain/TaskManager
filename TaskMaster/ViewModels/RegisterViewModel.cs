@@ -47,7 +47,7 @@ namespace TaskMaster.ViewModels
                     return;
                 }
 
-                var success = await _authService.RegisterAsync(Email, Password, Nom, Prenom);
+                var success = await _authService.RegisterAsync(Nom, Prenom, Email, Password);
                 if (success)
                 {
                     await Shell.Current.DisplayAlert("Succès", "Inscription réussie !", "OK");

@@ -23,7 +23,7 @@
                     Command="{Binding LoginCommand}"/>
             
             <Button Text="Créer un compte"
-                    Command="{Binding NavigateToRegisterCommand}"
+                    Command="{Binding RegisterCommand}"
                     Style="{StaticResource SecondaryButtonStyle}"/>
         </VerticalStackLayout>
     </ScrollView>

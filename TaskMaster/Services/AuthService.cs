@@ -51,13 +51,14 @@ namespace TaskMaster.Services
         public async Task<bool> LoginAsync(string email, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null || user.Password != HashPassword(password))
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
                 return false;
 
             _currentUser = user;
             AuthStateChanged?.Invoke(this, EventArgs.Empty);
             return true;
         }
+
 
         public void Logout()
         {
@@ -67,9 +68,8 @@ namespace TaskMaster.Services
 
         private string HashPassword(string password)
         {
-            using var sha256 = System.Security.Cryptography.SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
+
     }
 } 

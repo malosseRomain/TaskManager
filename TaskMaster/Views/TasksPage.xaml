@@ -49,8 +49,13 @@
                                        FontAttributes="Bold"/>
                                 <Label Text="{Binding Description}"
                                        FontSize="14"/>
-                                <Label Text="{Binding Echeance, StringFormat='Échéance: {0:dd/MM/yyyy}'}"
-                                       FontSize="12"/>
+                                <StackLayout Orientation="Horizontal" Spacing="10">
+                                    <Label Text="{Binding Echeance, StringFormat='Échéance: {0:dd/MM/yyyy}'}"
+                                           FontSize="12"/>
+                                    <Label Text="{Binding Statut}"
+                                           FontSize="12"
+                                           TextColor="{OnPlatform iOS=Blue, Android=Blue, Default=Blue}"/>
+                                </StackLayout>
                             </VerticalStackLayout>
                             
                             <HorizontalStackLayout Grid.Column="1" Spacing="5">

@@ -31,6 +31,11 @@
                     ItemsSource="{Binding Statuts}"
                     ItemDisplayBinding="{Binding DisplayText}"
                     SelectedItem="{Binding SelectedStatut}"/>
+
+            <Picker Title="Assigner à"
+                    ItemsSource="{Binding Utilisateurs}"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    SelectedItem="{Binding SelectedUtilisateur}"/>
             
             <Entry Placeholder="Étiquettes (séparées par des virgules)"
                    Text="{Binding Etiquettes}"/>

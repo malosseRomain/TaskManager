@@ -5,6 +5,7 @@ using TaskMaster.Data;
 using TaskStatus = TaskMaster.Models.TaskStatus;
 using TaskMaster.Services;
 using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskMaster.ViewModels
 {
@@ -40,6 +41,12 @@ namespace TaskMaster.ViewModels
         [ObservableProperty]
         private ObservableCollection<CommentViewModel> commentaires = new();
 
+        [ObservableProperty]
+        private ObservableCollection<UserDisplay> utilisateurs = new();
+
+        [ObservableProperty]
+        private UserDisplay selectedUtilisateur;
+
         public List<string> Categories { get; } = Enum.GetNames(typeof(TaskCategory)).ToList();
         public List<string> Priorites { get; } = Enum.GetNames(typeof(TaskPriority)).ToList();
         public List<StatusDisplay> Statuts { get; } = StatusDisplay.GetStatusDisplays();
@@ -49,6 +56,21 @@ namespace TaskMaster.ViewModels
             _context = context;
             _authService = authService;
             InitialiserFormulaire();
+            ChargerUtilisateurs();
+        }
+
+        private async void ChargerUtilisateurs()
+        {
+            var users = await _context.Users.ToListAsync();
+            Utilisateurs.Clear();
+            foreach (var user in users)
+            {
+                Utilisateurs.Add(new UserDisplay
+                {
+                    Id = user.Id_User,
+                    DisplayName = $"{user.Prenom} {user.Nom}"
+                });
+            }
         }
 
         private void InitialiserFormulaire()
@@ -62,6 +84,7 @@ namespace TaskMaster.ViewModels
             Etiquettes = string.Empty;
             SousTaches.Clear();
             Commentaires.Clear();
+            SelectedUtilisateur = null;
         }
 
         [RelayCommand]
@@ -110,7 +133,7 @@ namespace TaskMaster.ViewModels
                     Statut = Enum.Parse<TaskStatus>(SelectedStatut.Value),
                     DateCreation = DateTime.Now,
                     Id_Auteur = currentUser.Id_User,
-                    Id_Realisateur = currentUser.Id_User,
+                    Id_Realisateur = SelectedUtilisateur?.Id ?? currentUser.Id_User,
                     Etiquettes = Etiquettes,
                     SousTaches = SousTaches.Select(st => new SubTask
                     {
@@ -158,5 +181,11 @@ namespace TaskMaster.ViewModels
     {
         [ObservableProperty]
         private string contenu;
+    }
+
+    public class UserDisplay
+    {
+        public int Id { get; set; }
+        public string DisplayName { get; set; }
     }
 } 

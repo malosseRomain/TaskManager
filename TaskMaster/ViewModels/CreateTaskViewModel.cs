@@ -4,6 +4,7 @@ using TaskMaster.Models;
 using TaskMaster.Data;
 using TaskStatus = TaskMaster.Models.TaskStatus;
 using TaskMaster.Services;
+using System.Collections.ObjectModel;
 
 namespace TaskMaster.ViewModels
 {
@@ -33,6 +34,9 @@ namespace TaskMaster.ViewModels
         [ObservableProperty]
         private string etiquettes = string.Empty;
 
+        [ObservableProperty]
+        private ObservableCollection<SubTaskViewModel> sousTaches = new();
+
         public List<string> Categories { get; } = Enum.GetNames(typeof(TaskCategory)).ToList();
         public List<string> Priorites { get; } = Enum.GetNames(typeof(TaskPriority)).ToList();
         public List<StatusDisplay> Statuts { get; } = StatusDisplay.GetStatusDisplays();
@@ -44,6 +48,18 @@ namespace TaskMaster.ViewModels
             SelectedCategorie = TaskCategory.Travail.ToString();
             SelectedPriorite = TaskPriority.Moyenne.ToString();
             SelectedStatut = Statuts.First(s => s.Value == TaskStatus.Afaire.ToString());
+        }
+
+        [RelayCommand]
+        private void AjouterSousTache()
+        {
+            SousTaches.Add(new SubTaskViewModel());
+        }
+
+        [RelayCommand]
+        private void SupprimerSousTache(SubTaskViewModel sousTache)
+        {
+            SousTaches.Remove(sousTache);
         }
 
         [RelayCommand]
@@ -69,7 +85,13 @@ namespace TaskMaster.ViewModels
                     DateCreation = DateTime.Now,
                     Id_Auteur = currentUser.Id_User,
                     Id_Realisateur = currentUser.Id_User,
-                    Etiquettes = Etiquettes
+                    Etiquettes = Etiquettes,
+                    SousTaches = SousTaches.Select(st => new SubTask
+                    {
+                        Titre = st.Titre,
+                        Statut = TaskStatus.Afaire,
+                        Echeance = st.Echeance
+                    }).ToList()
                 };
 
                 _context.Tasks.Add(task);
@@ -83,5 +105,19 @@ namespace TaskMaster.ViewModels
                 await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
             }
         }
+    }
+
+    public partial class SubTaskViewModel : ObservableObject
+    {
+        public SubTaskViewModel()
+        {
+            Echeance = DateTime.Now.AddDays(7);
+        }
+
+        [ObservableProperty]
+        private string titre;
+
+        [ObservableProperty]
+        private DateTime? echeance;
     }
 } 

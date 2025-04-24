@@ -5,6 +5,7 @@ using TaskMaster.Data;
 using TaskMaster.Services;
 using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
+using TaskMaster.Views;
 
 namespace TaskMaster.ViewModels
 {
@@ -89,10 +90,15 @@ namespace TaskMaster.ViewModels
         }
 
         [RelayCommand]
-        public async Task NaviguerVersProjet(Projet projet)
+        private async Task NaviguerVersProjet(Projet projet)
         {
             if (projet == null) return;
-            await Shell.Current.GoToAsync($"//ProjectDetailsPage?projectId={projet.Id_Projet}");
+            
+            var viewModel = new ProjectDetailsViewModel(_context, _authService);
+            await viewModel.LoadProjectAsync(projet.Id_Projet);
+            
+            var page = new ProjectDetailsPage(viewModel);
+            await Shell.Current.Navigation.PushAsync(page);
         }
     }
 } 

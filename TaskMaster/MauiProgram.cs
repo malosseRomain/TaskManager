@@ -6,6 +6,8 @@ using TaskMaster.ViewModels;
 using TaskMaster.Views;
 using TaskMaster.Services;
 
+namespace TaskMaster;
+
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
@@ -35,6 +37,7 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<ProjectsViewModel>();
+        builder.Services.AddTransient<ProjectDetailsViewModel>();
 
         // Enregistrement des pages
         builder.Services.AddTransient<TasksPage>();
@@ -42,6 +45,7 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddTransient<ProjectsPage>();
+        builder.Services.AddTransient<ProjectDetailsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

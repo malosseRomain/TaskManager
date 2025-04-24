@@ -36,16 +36,26 @@
 
             <!-- Informations -->
             <Frame BorderColor="Gray" Padding="10">
-                <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto">
-                    <Label Text="Catégorie" FontAttributes="Bold" Grid.Column="0"/>
-                    <Label Text="{Binding Task.Categorie}" Grid.Column="0" Grid.Row="1"/>
-                    
-                    <Label Text="Priorité" FontAttributes="Bold" Grid.Column="1"/>
-                    <Label Text="{Binding Task.Priorite}" Grid.Column="1" Grid.Row="1"/>
-                    
-                    <Label Text="Statut" FontAttributes="Bold" Grid.Column="0" Grid.Row="2"/>
-                    <Label Text="{Binding Task.Statut}" Grid.Column="0" Grid.Row="3"/>
-                </Grid>
+                <VerticalStackLayout Spacing="10">
+                    <!-- Catégorie et Priorité sur la même ligne -->
+                    <Grid ColumnDefinitions="*, *">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Catégorie" FontAttributes="Bold"/>
+                            <Label Text="{Binding Task.Categorie}"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Priorité" FontAttributes="Bold"/>
+                            <Label Text="{Binding Task.Priorite}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Statut sur une ligne séparée -->
+                    <VerticalStackLayout>
+                        <Label Text="Statut" FontAttributes="Bold"/>
+                        <Label Text="{Binding Task.Statut}"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
             </Frame>
 
             <!-- Assignation -->

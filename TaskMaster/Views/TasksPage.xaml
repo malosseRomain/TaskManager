@@ -42,57 +42,44 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame Margin="10" Padding="10">
-                        <Grid ColumnDefinitions="*, Auto, Auto, Auto">
-                            <VerticalStackLayout>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <!-- Titre et Description -->
                                 <Label Text="{Binding Titre}"
                                        FontSize="16"
                                        FontAttributes="Bold"/>
                                 <Label Text="{Binding Description}"
                                        FontSize="14"/>
                                 
-                                <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="15">
-                                    <!-- Échéance -->
-                                    <Label Grid.Column="0">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Échéance: " FontAttributes="Bold"/>
-                                                <Span Text="{Binding Echeance, StringFormat='{0:dd/MM/yyyy}'}"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
-                                    
-                                    <!-- Catégorie -->
-                                    <Label Grid.Column="1">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Catégorie: " FontAttributes="Bold"/>
-                                                <Span Text="{Binding Categorie}"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
+                                <!-- Informations -->
+                                <HorizontalStackLayout Spacing="15">
+                                    <Label>
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Catégorie: {0}">
+                                                <Binding Path="Categorie"/>
+                                            </MultiBinding>
+                                        </Label.Text>
                                     </Label>
 
-                                    <!-- Statut -->
-                                    <Label Grid.Column="2">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Statut: " FontAttributes="Bold"/>
-                                                <Span Text="{Binding Statut}"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
+                                    <Label>
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Statut: {0}">
+                                                <Binding Path="Statut"/>
+                                            </MultiBinding>
+                                        </Label.Text>
                                     </Label>
-                                    
-                                    <!-- Priorité -->
-                                    <Label Grid.Column="3">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Priorité: " FontAttributes="Bold"/>
-                                                <Span Text="{Binding Priorite}"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
+
+                                    <Label>
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Priorité: {0}">
+                                                <Binding Path="Priorite"/>
+                                            </MultiBinding>
+                                        </Label.Text>
                                     </Label>
-                                </Grid>
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
-                            
+
+                            <!-- Boutons -->
                             <HorizontalStackLayout Grid.Column="1" Spacing="5">
                                 <Button Text="Détails"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:TasksViewModel}}, Path=ViewDetailsCommand}"

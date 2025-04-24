@@ -37,6 +37,9 @@ namespace TaskMaster.ViewModels
         [ObservableProperty]
         private ObservableCollection<SubTaskViewModel> sousTaches = new();
 
+        [ObservableProperty]
+        private ObservableCollection<CommentViewModel> commentaires = new();
+
         public List<string> Categories { get; } = Enum.GetNames(typeof(TaskCategory)).ToList();
         public List<string> Priorites { get; } = Enum.GetNames(typeof(TaskPriority)).ToList();
         public List<StatusDisplay> Statuts { get; } = StatusDisplay.GetStatusDisplays();
@@ -58,6 +61,7 @@ namespace TaskMaster.ViewModels
             SelectedStatut = Statuts.First(s => s.Value == TaskStatus.Afaire.ToString());
             Etiquettes = string.Empty;
             SousTaches.Clear();
+            Commentaires.Clear();
         }
 
         [RelayCommand]
@@ -70,6 +74,18 @@ namespace TaskMaster.ViewModels
         private void SupprimerSousTache(SubTaskViewModel sousTache)
         {
             SousTaches.Remove(sousTache);
+        }
+
+        [RelayCommand]
+        private void AjouterCommentaire()
+        {
+            Commentaires.Add(new CommentViewModel());
+        }
+
+        [RelayCommand]
+        private void SupprimerCommentaire(CommentViewModel commentaire)
+        {
+            Commentaires.Remove(commentaire);
         }
 
         [RelayCommand]
@@ -101,6 +117,12 @@ namespace TaskMaster.ViewModels
                         Titre = st.Titre,
                         Statut = TaskStatus.Afaire,
                         Echeance = st.Echeance
+                    }).ToList(),
+                    Commentaires = Commentaires.Select(c => new Commentaire
+                    {
+                        Contenu = c.Contenu,
+                        DateCreation = DateTime.Now,
+                        Id_Auteur = currentUser.Id_User
                     }).ToList()
                 };
 
@@ -130,5 +152,11 @@ namespace TaskMaster.ViewModels
 
         [ObservableProperty]
         private DateTime? echeance;
+    }
+
+    public partial class CommentViewModel : ObservableObject
+    {
+        [ObservableProperty]
+        private string contenu;
     }
 } 

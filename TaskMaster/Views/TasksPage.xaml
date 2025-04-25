@@ -6,41 +6,70 @@
              Title="Mes Tâches">
 
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto,*" RowSpacing="10" Margin="10">
-            <!-- Barre d'outils -->
-            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
-                <!-- Bouton Nouvelle Tâche -->
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10" Margin="10">
+            <!-- Première ligne : Nouvelle tâche et recherche -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="10">
                 <Button Text="Nouvelle Tâche"
                         Grid.Column="0"
                         BackgroundColor="#B19CD9"
                         Command="{Binding NavigateToCreateTaskCommand}"/>
 
-                <!-- Barre de recherche -->
                 <SearchBar Grid.Column="1"
-                           Placeholder="Rechercher..."
-                           BackgroundColor="#2B2B2B"/>
+                          Placeholder="Rechercher..."
+                          Text="{Binding SearchText}"
+                          SearchCommand="{Binding SearchCommand}"
+                          BackgroundColor="#2B2B2B"/>
+            </Grid>
 
-                <!-- Menu de tri -->
-                <Button Grid.Column="2"
-                        Text="Trier"
-                        BackgroundColor="#B19CD9"/>
+            <!-- Deuxième ligne : Filtres -->
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
+                <!-- Options de tri -->
+                <Picker Grid.Column="0"
+                        Title="Trier par"
+                        SelectedItem="{Binding SelectedSortOption}"
+                        BackgroundColor="#B19CD9">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Titre</x:String>
+                            <x:String>Priorité</x:String>
+                            <x:String>Échéance</x:String>
+                            <x:String>Catégorie</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
 
-                <HorizontalStackLayout Grid.Column="3" Spacing="5">
-                    <Button Text="Priorité"
-                            Command="{Binding SortByPriorityCommand}"
-                            BackgroundColor="#B19CD9"/>
-                    <Button Text="Échéance"
-                            Command="{Binding SortByDueDateCommand}"
-                            BackgroundColor="#B19CD9"/>
-                    <Button Text="Catégorie"
-                            Command="{Binding SortByCategoryCommand}"
-                            BackgroundColor="#B19CD9"/>
-                </HorizontalStackLayout>
+                <!-- Ordre de tri -->
+                <Picker Grid.Column="1"
+                        Title="Ordre"
+                        SelectedItem="{Binding SortOrder}"
+                        BackgroundColor="#B19CD9">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Croissant</x:String>
+                            <x:String>Décroissant</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <!-- Type de recherche -->
+                <Picker Grid.Column="2"
+                        Title="Rechercher dans"
+                        SelectedItem="{Binding SearchType}"
+                        BackgroundColor="#B19CD9">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Tout</x:String>
+                            <x:String>Titre</x:String>
+                            <x:String>Description</x:String>
+                            <x:String>Étiquettes</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
             </Grid>
 
             <!-- Liste des tâches -->
-            <CollectionView Grid.Row="1"
-                          ItemsSource="{Binding Tasks}"
+            <CollectionView Grid.Row="2"
+                          ItemsSource="{Binding FilteredTasks}"
                           SelectionMode="Single"
                           SelectionChanged="OnTaskSelected">
                 

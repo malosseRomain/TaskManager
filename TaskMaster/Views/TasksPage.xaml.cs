@@ -38,7 +38,10 @@ namespace TaskMaster.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await _viewModel.LoadTasksAsync();
+            if (BindingContext is TasksViewModel viewModel)
+            {
+                await viewModel.RefreshTasksAsync();
+            }
         }
     }
 } 

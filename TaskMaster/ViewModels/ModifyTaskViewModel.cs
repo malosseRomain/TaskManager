@@ -13,6 +13,7 @@ namespace TaskMaster.ViewModels
     public partial class ModifyTaskViewModel : ObservableObject, IQueryAttributable
     {
         private readonly AppDbContext _context;
+        private readonly TasksViewModel _tasksViewModel;
 
         [ObservableProperty]
         private TaskItem task;
@@ -24,9 +25,10 @@ namespace TaskMaster.ViewModels
                 .Cast<TaskMaster.Models.TaskStatus>()
                 .ToList();
 
-        public ModifyTaskViewModel(AppDbContext context)
+        public ModifyTaskViewModel(AppDbContext context, TasksViewModel tasksViewModel)
         {
             _context = context;
+            _tasksViewModel = tasksViewModel;
             Task = new TaskItem();
         }
 
@@ -62,8 +64,13 @@ namespace TaskMaster.ViewModels
                 existingTask.Categorie = Task.Categorie;
                 existingTask.Priorite = Task.Priorite;
                 existingTask.Statut = Task.Statut;
+                existingTask.Etiquettes = Task.Etiquettes;
 
                 await _context.SaveChangesAsync();
+                
+                // Forcer un rafraîchissement complet
+                await _tasksViewModel.RefreshTasksAsync();
+                
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)

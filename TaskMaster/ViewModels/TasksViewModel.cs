@@ -20,6 +20,21 @@ namespace TaskMaster.ViewModels
         [ObservableProperty]
         private ObservableCollection<TaskItem> tasks;
 
+        [ObservableProperty]
+        private ObservableCollection<TaskItem> filteredTasks;
+
+        [ObservableProperty]
+        private string searchText;
+
+        [ObservableProperty]
+        private string selectedSortOption;
+
+        [ObservableProperty]
+        private string sortOrder;
+
+        [ObservableProperty]
+        private string searchType;
+
         public ICommand SortByPriorityCommand { get; }
         public ICommand SortByDueDateCommand { get; }
         public ICommand SortByCategoryCommand { get; }
@@ -30,10 +45,95 @@ namespace TaskMaster.ViewModels
             _authService = authService;
             _taskService = taskService;
             _navigationService = navigationService;
+            Tasks = new ObservableCollection<TaskItem>();
+            FilteredTasks = new ObservableCollection<TaskItem>();
+            
+            // Valeurs par défaut
+            SelectedSortOption = "Titre";
+            SortOrder = "Croissant";
+            SearchType = "Tout";
             LoadTasks();
             SortByPriorityCommand = new Command(SortByPriority);
             SortByDueDateCommand = new Command(SortByDueDate);
             SortByCategoryCommand = new Command(SortByCategory);
+        }
+
+        partial void OnSearchTextChanged(string value)
+        {
+            ApplyFiltersAndSort();
+        }
+
+        partial void OnSelectedSortOptionChanged(string value)
+        {
+            ApplyFiltersAndSort();
+        }
+
+        partial void OnSortOrderChanged(string value)
+        {
+            ApplyFiltersAndSort();
+        }
+
+        partial void OnSearchTypeChanged(string value)
+        {
+            ApplyFiltersAndSort();
+        }
+
+        private void ApplyFiltersAndSort()
+        {
+            var query = Tasks.AsQueryable();
+
+            // Appliquer le filtre de recherche
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var searchLower = SearchText.ToLower();
+                switch (SearchType)
+                {
+                    case "Titre":
+                        query = query.Where(t => t.Titre.ToLower().Contains(searchLower));
+                        break;
+                    case "Description":
+                        query = query.Where(t => t.Description.ToLower().Contains(searchLower));
+                        break;
+                    case "Étiquettes":
+                        query = query.Where(t => t.Etiquettes.ToLower().Contains(searchLower));
+                        break;
+                    default: // "Tout"
+                        query = query.Where(t => 
+                            t.Titre.ToLower().Contains(searchLower) ||
+                            t.Description.ToLower().Contains(searchLower) ||
+                            t.Etiquettes.ToLower().Contains(searchLower));
+                        break;
+                }
+            }
+
+            // Appliquer le tri
+            var isDescending = SortOrder == "Décroissant";
+            switch (SelectedSortOption)
+            {
+                case "Titre":
+                    query = isDescending 
+                        ? query.OrderByDescending(t => t.Titre)
+                        : query.OrderBy(t => t.Titre);
+                    break;
+                case "Priorité":
+                    query = isDescending 
+                        ? query.OrderByDescending(t => t.Priorite)
+                        : query.OrderBy(t => t.Priorite);
+                    break;
+                case "Échéance":
+                    query = isDescending 
+                        ? query.OrderByDescending(t => t.Echeance)
+                        : query.OrderBy(t => t.Echeance);
+                    break;
+                case "Catégorie":
+                    query = isDescending 
+                        ? query.OrderByDescending(t => t.Categorie)
+                        : query.OrderBy(t => t.Categorie);
+                    break;
+            }
+
+            // Mettre à jour la liste filtrée
+            FilteredTasks = new ObservableCollection<TaskItem>(query.ToList());
         }
 
         [RelayCommand]
@@ -41,17 +141,9 @@ namespace TaskMaster.ViewModels
         {
             try
             {
-                var currentUser = _authService.CurrentUser;
-                if (currentUser != null)
-                {
-                    Tasks = new ObservableCollection<TaskItem>(await Task.Run(() => _context.Tasks
-                        .Where(t => t.Id_Auteur == currentUser.Id_User || t.Id_Realisateur == currentUser.Id_User)
-                        .ToList()));
-                }
-                else
-                {
-                    Tasks = new ObservableCollection<TaskItem>();
-                }
+                var loadedTasks = await _taskService.GetAllTasksAsync();
+                Tasks = new ObservableCollection<TaskItem>(loadedTasks);
+                ApplyFiltersAndSort();
             }
             catch (Exception ex)
             {
@@ -186,6 +278,59 @@ namespace TaskMaster.ViewModels
             foreach (var task in sortedTasks)
             {
                 Tasks.Add(task);
+            }
+        }
+
+        // Nouvelle méthode pour mettre à jour une tâche spécifique
+        public async Task UpdateTaskInListAsync(int taskId)
+        {
+            try
+            {
+                var updatedTask = await _taskService.GetTaskByIdAsync(taskId);
+                if (updatedTask != null)
+                {
+                    // Mettre à jour dans la liste principale
+                    var existingTaskIndex = Tasks.ToList().FindIndex(t => t.Id_Task == taskId);
+                    if (existingTaskIndex != -1)
+                    {
+                        Tasks.RemoveAt(existingTaskIndex);
+                        Tasks.Insert(existingTaskIndex, updatedTask);
+                    }
+
+                    // Mettre à jour dans la liste filtrée
+                    var existingFilteredTaskIndex = FilteredTasks.ToList().FindIndex(t => t.Id_Task == taskId);
+                    if (existingFilteredTaskIndex != -1)
+                    {
+                        FilteredTasks.RemoveAt(existingFilteredTaskIndex);
+                        FilteredTasks.Insert(existingFilteredTaskIndex, updatedTask);
+                    }
+
+                    // Forcer le rafraîchissement de l'interface
+                    OnPropertyChanged(nameof(Tasks));
+                    OnPropertyChanged(nameof(FilteredTasks));
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Erreur", $"Impossible de mettre à jour la tâche : {ex.Message}", "OK");
+            }
+        }
+
+        // Méthode pour rafraîchir complètement la liste
+        [RelayCommand]
+        public async Task RefreshTasksAsync()
+        {
+            try
+            {
+                var loadedTasks = await _taskService.GetAllTasksAsync();
+                Tasks = new ObservableCollection<TaskItem>(loadedTasks);
+                ApplyFiltersAndSort();
+                OnPropertyChanged(nameof(Tasks));
+                OnPropertyChanged(nameof(FilteredTasks));
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Erreur", "Impossible de rafraîchir les tâches : " + ex.Message, "OK");
             }
         }
     }

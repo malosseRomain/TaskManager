@@ -5,10 +5,13 @@ namespace TaskMaster.Views
 {
     public partial class TasksPage : ContentPage
     {
+        private readonly TasksViewModel _viewModel;
+
         public TasksPage(TasksViewModel viewModel)
         {
             InitializeComponent();
-            BindingContext = viewModel;
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
         }
 
         private async void OnNewTaskClicked(object sender, EventArgs e)
@@ -27,25 +30,15 @@ namespace TaskMaster.Views
         {
             if (e.CurrentSelection.FirstOrDefault() is TaskItem selectedTask)
             {
-                try
-                {
-                    // TODO: Naviguer vers la page de détails de la tâche
-                    // await Shell.Current.GoToAsync($"//TaskDetailsPage?taskId={selectedTask.Id}");
-                }
-                catch (Exception ex)
-                {
-                    await DisplayAlert("Erreur", "Impossible de naviguer vers les détails de la tâche : " + ex.Message, "OK");
-                }
+                // Réinitialiser la sélection
+                ((CollectionView)sender).SelectedItem = null;
             }
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            if (BindingContext is TasksViewModel viewModel)
-            {
-                await viewModel.LoadTasksAsync();
-            }
+            await _viewModel.LoadTasksAsync();
         }
     }
 } 

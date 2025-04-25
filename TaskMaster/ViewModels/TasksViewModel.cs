@@ -4,6 +4,9 @@ using TaskMaster.Models;
 using TaskMaster.Data;
 using TaskMaster.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 
 namespace TaskMaster.ViewModels
 {
@@ -11,15 +14,26 @@ namespace TaskMaster.ViewModels
     {
         private readonly AppDbContext _context;
         private readonly IAuthService _authService;
+        private readonly ITaskService _taskService;
+        private readonly INavigationService _navigationService;
 
         [ObservableProperty]
-        private List<TaskItem> tasks;
+        private ObservableCollection<TaskItem> tasks;
 
-        public TasksViewModel(AppDbContext context, IAuthService authService)
+        public ICommand SortByPriorityCommand { get; }
+        public ICommand SortByDueDateCommand { get; }
+        public ICommand SortByCategoryCommand { get; }
+
+        public TasksViewModel(AppDbContext context, IAuthService authService, ITaskService taskService, INavigationService navigationService)
         {
             _context = context;
             _authService = authService;
+            _taskService = taskService;
+            _navigationService = navigationService;
             LoadTasks();
+            SortByPriorityCommand = new Command(SortByPriority);
+            SortByDueDateCommand = new Command(SortByDueDate);
+            SortByCategoryCommand = new Command(SortByCategory);
         }
 
         [RelayCommand]
@@ -30,13 +44,13 @@ namespace TaskMaster.ViewModels
                 var currentUser = _authService.CurrentUser;
                 if (currentUser != null)
                 {
-                    Tasks = await Task.Run(() => _context.Tasks
+                    Tasks = new ObservableCollection<TaskItem>(await Task.Run(() => _context.Tasks
                         .Where(t => t.Id_Auteur == currentUser.Id_User || t.Id_Realisateur == currentUser.Id_User)
-                        .ToList());
+                        .ToList()));
                 }
                 else
                 {
-                    Tasks = new List<TaskItem>();
+                    Tasks = new ObservableCollection<TaskItem>();
                 }
             }
             catch (Exception ex)
@@ -50,13 +64,13 @@ namespace TaskMaster.ViewModels
             var currentUser = _authService.CurrentUser;
             if (currentUser != null)
             {
-                Tasks = _context.Tasks
+                Tasks = new ObservableCollection<TaskItem>(_context.Tasks
                     .Where(t => t.Id_Auteur == currentUser.Id_User || t.Id_Realisateur == currentUser.Id_User)
-                    .ToList();
+                    .ToList());
             }
             else
             {
-                Tasks = new List<TaskItem>();
+                Tasks = new ObservableCollection<TaskItem>();
             }
         }
 
@@ -142,6 +156,36 @@ namespace TaskMaster.ViewModels
             catch (Exception ex)
             {
                 await Shell.Current.DisplayAlert("Erreur", $"Impossible d'afficher les détails : {ex.Message}", "OK");
+            }
+        }
+
+        private void SortByPriority()
+        {
+            var sortedTasks = Tasks.OrderBy(t => t.Priorite).ToList();
+            Tasks.Clear();
+            foreach (var task in sortedTasks)
+            {
+                Tasks.Add(task);
+            }
+        }
+
+        private void SortByDueDate()
+        {
+            var sortedTasks = Tasks.OrderBy(t => t.Echeance).ToList();
+            Tasks.Clear();
+            foreach (var task in sortedTasks)
+            {
+                Tasks.Add(task);
+            }
+        }
+
+        private void SortByCategory()
+        {
+            var sortedTasks = Tasks.OrderBy(t => t.Categorie).ToList();
+            Tasks.Clear();
+            foreach (var task in sortedTasks)
+            {
+                Tasks.Add(task);
             }
         }
     }

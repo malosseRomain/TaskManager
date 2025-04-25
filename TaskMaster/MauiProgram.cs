@@ -32,12 +32,19 @@ public static class MauiProgram
 
         // Enregistrement des services
         builder.Services.AddSingleton<IAuthService, AuthService>();
-        builder.Services.AddTransient<TasksViewModel>();
+        builder.Services.AddSingleton<ITaskService, TaskService>();
+        builder.Services.AddSingleton<INavigationService, NavigationService>();
+        builder.Services.AddSingleton<TasksViewModel>();
         builder.Services.AddTransient<CreateTaskViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<ProjectsViewModel>();
         builder.Services.AddTransient<ProjectDetailsViewModel>();
+        builder.Services.AddTransient<ModifyTaskViewModel>();
+        builder.Services.AddTransient<ModifyTaskPage>();
+        builder.Services.AddTransient<TaskDetailsPage>();
+        builder.Services.AddTransient<TaskDetailsViewModel>();
+        builder.Services.AddTransient<TasksViewModel>();
 
         // Enregistrement des pages
         builder.Services.AddTransient<TasksPage>();

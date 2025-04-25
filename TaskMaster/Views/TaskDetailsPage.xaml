@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TaskMaster.ViewModels"
+             x:Class="TaskMaster.Views.TaskDetailsPage"
+             Title="Détails de la tâche">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <!-- Titre -->
+            <Frame BorderColor="Gray" Padding="10">
+                <VerticalStackLayout>
+                    <Label Text="Titre" FontAttributes="Bold" FontSize="16"/>
+                    <Label Text="{Binding Task.Titre}" FontSize="14"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Description -->
+            <Frame BorderColor="Gray" Padding="10">
+                <VerticalStackLayout>
+                    <Label Text="Description" FontAttributes="Bold" FontSize="16"/>
+                    <Label Text="{Binding Task.Description}" FontSize="14"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Dates -->
+            <Frame BorderColor="Gray" Padding="10">
+                <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto">
+                    <Label Text="Date de création" FontAttributes="Bold" Grid.Column="0"/>
+                    <Label Text="{Binding Task.DateCreation, StringFormat='{0:dd/MM/yyyy}'}" Grid.Column="0" Grid.Row="1"/>
+                    
+                    <Label Text="Échéance" FontAttributes="Bold" Grid.Column="1"/>
+                    <Label Text="{Binding Task.Echeance, StringFormat='{0:dd/MM/yyyy}'}" Grid.Column="1" Grid.Row="1"/>
+                </Grid>
+            </Frame>
+
+            <!-- Informations -->
+            <Frame BorderColor="Gray" Padding="10">
+                <VerticalStackLayout Spacing="10">
+                    <!-- Catégorie et Priorité sur la même ligne -->
+                    <Grid ColumnDefinitions="*, *">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Catégorie" FontAttributes="Bold"/>
+                            <Label Text="{Binding Task.Categorie}"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Priorité" FontAttributes="Bold"/>
+                            <Label Text="{Binding Task.Priorite}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Statut sur une ligne séparée -->
+                    <VerticalStackLayout>
+                        <Label Text="Statut" FontAttributes="Bold"/>
+                        <Label Text="{Binding Task.Statut}"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Assignation -->
+            <Frame BorderColor="Gray" Padding="10">
+                <Grid ColumnDefinitions="*, *">
+                    <VerticalStackLayout Grid.Column="0">
+                        <Label Text="Créée par" FontAttributes="Bold"/>
+                        <Label Text="{Binding Task.Auteur.Username}"/>
+                    </VerticalStackLayout>
+                    
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Assignée à" FontAttributes="Bold"/>
+                        <Label Text="{Binding Task.Realisateur.Username}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Sous-tâches si existantes -->
+            <Frame BorderColor="Gray" Padding="10" IsVisible="{Binding HasSubTasks}">
+                <VerticalStackLayout>
+                    <Label Text="Sous-tâches" FontAttributes="Bold"/>
+                    <CollectionView ItemsSource="{Binding Task.SousTaches}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding Titre}"/>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

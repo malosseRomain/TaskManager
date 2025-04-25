@@ -27,9 +27,10 @@
 
     <!-- Menu pour les utilisateurs connectés -->
     <FlyoutItem IsVisible="{Binding Source={x:Reference shell}, Path=BindingContext.IsAuthenticated}">
-        <ShellContent Title="Mes Tâches" 
-                     ContentTemplate="{DataTemplate views:TasksPage}"
-                     Route="TasksPage"/>
+        <Tab>
+            <ShellContent Title="Mes Tâches" 
+                         ContentTemplate="{DataTemplate views:TasksPage}"
+                         Route="TasksPage"/>
 
         <ShellContent Title="Nouvelle Tâche" 
                      ContentTemplate="{DataTemplate views:CreateTaskPage}"

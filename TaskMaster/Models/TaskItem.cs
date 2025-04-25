@@ -28,6 +28,10 @@ namespace TaskMaster.Models
         [Required]
         public TaskStatus Statut { get; set; }
 
+        [NotMapped]
+        public string StatutDisplay => StatusDisplay.GetStatusDisplays()
+            .FirstOrDefault(s => s.Value == Statut.ToString())?.DisplayText ?? Statut.ToString();
+
         [StringLength(200)]
         public string? Etiquettes { get; set; }
 

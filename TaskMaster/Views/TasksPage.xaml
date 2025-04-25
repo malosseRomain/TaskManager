@@ -15,10 +15,10 @@
                         Command="{Binding NavigateToCreateTaskCommand}"/>
 
                 <SearchBar Grid.Column="1"
-                          Placeholder="Rechercher..."
-                          Text="{Binding SearchText}"
-                          SearchCommand="{Binding SearchCommand}"
-                          BackgroundColor="#2B2B2B"/>
+                           Placeholder="Rechercher..."
+                           Text="{Binding SearchText}"
+                           SearchCommand="{Binding SearchCommand}"
+                           BackgroundColor="#2B2B2B"/>
             </Grid>
 
             <!-- Deuxième ligne : Filtres -->
@@ -69,14 +69,14 @@
 
             <!-- Liste des tâches -->
             <CollectionView Grid.Row="2"
-                          ItemsSource="{Binding FilteredTasks}"
-                          SelectionMode="Single"
-                          SelectionChanged="OnTaskSelected">
+                            ItemsSource="{Binding FilteredTasks}"
+                            SelectionMode="Single"
+                            SelectionChanged="OnTaskSelected">
                 
                 <CollectionView.EmptyView>
                     <VerticalStackLayout HorizontalOptions="Center" 
-                                       VerticalOptions="Center"
-                                       Spacing="10">
+                                         VerticalOptions="Center"
+                                         Spacing="10">
                         <Label Text="Aucune tâche trouvée"
                                FontSize="18"
                                FontAttributes="Bold"
@@ -129,4 +129,4 @@
             </CollectionView>
         </Grid>
     </ContentPage.Content>
-</ContentPage>  
+</ContentPage>

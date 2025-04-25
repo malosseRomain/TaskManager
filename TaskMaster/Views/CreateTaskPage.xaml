@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:TaskMaster.ViewModels"
              x:Class="TaskMaster.Views.CreateTaskPage"
              Title="Nouvelle Tâche">
     
@@ -28,11 +29,96 @@
             
             <Picker Title="Statut"
                     ItemsSource="{Binding Statuts}"
-                    ItemDisplayBinding="{Binding .}"
+                    ItemDisplayBinding="{Binding DisplayText}"
                     SelectedItem="{Binding SelectedStatut}"/>
+
+            <Picker Title="Projet (optionnel)"
+                    ItemsSource="{Binding Projets}"
+                    ItemDisplayBinding="{Binding Nom}"
+                    SelectedItem="{Binding SelectedProjet}"/>
+            
+            <Picker Title="Assigner à"
+                    ItemsSource="{Binding Utilisateurs}"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    SelectedItem="{Binding SelectedUtilisateur}"/>
             
             <Entry Placeholder="Étiquettes (séparées par des virgules)"
                    Text="{Binding Etiquettes}"/>
+
+            <!-- Section Sous-tâches -->
+            <Frame Margin="0,10,0,0" Padding="10">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout>
+                        <Label Text="Sous-tâches"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+                        <Button Text="+"
+                                Command="{Binding AjouterSousTacheCommand}"
+                                HorizontalOptions="End"
+                                WidthRequest="40"/>
+                    </HorizontalStackLayout>
+
+                    <CollectionView ItemsSource="{Binding SousTaches}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <VerticalStackLayout>
+                                            <Entry Placeholder="Titre de la sous-tâche"
+                                                   Text="{Binding Titre}"/>
+                                            <DatePicker Date="{Binding Echeance}"
+                                                        Format="D"/>
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="1"
+                                                Text="×"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CreateTaskViewModel}}, Path=SupprimerSousTacheCommand}"
+                                                CommandParameter="{Binding .}"
+                                                WidthRequest="40"
+                                                BackgroundColor="Red"
+                                                TextColor="White"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Section Commentaires -->
+            <Frame Margin="0,10,0,0" Padding="10">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout>
+                        <Label Text="Commentaires"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+                        <Button Text="+"
+                                Command="{Binding AjouterCommentaireCommand}"
+                                HorizontalOptions="End"
+                                WidthRequest="40"/>
+                    </HorizontalStackLayout>
+
+                    <CollectionView ItemsSource="{Binding Commentaires}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Editor Placeholder="Ajouter un commentaire..."
+                                               Text="{Binding Contenu}"
+                                               HeightRequest="100"/>
+                                        <Button Grid.Column="1"
+                                                Text="×"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CreateTaskViewModel}}, Path=SupprimerCommentaireCommand}"
+                                                CommandParameter="{Binding .}"
+                                                WidthRequest="40"
+                                                BackgroundColor="Red"
+                                                TextColor="White"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
             
             <Button Text="Créer la tâche"
                     Command="{Binding CreateTaskAsyncCommand}"

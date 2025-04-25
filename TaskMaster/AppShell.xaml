@@ -5,7 +5,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:TaskMaster.Views"
-    Shell.FlyoutBehavior="Flyout">
+    Shell.FlyoutBehavior="Disabled">
 
     <Shell.FlyoutHeader>
         <Label Text="TaskMaster" 
@@ -32,10 +32,12 @@
                          ContentTemplate="{DataTemplate views:TasksPage}"
                          Route="TasksPage"/>
 
-            <ShellContent Title="Nouvelle Tâche" 
-                         ContentTemplate="{DataTemplate views:CreateTaskPage}"
-                         Route="CreateTaskPage"/>
-        </Tab>
-    </FlyoutItem>
+        <ShellContent Title="Nouvelle Tâche" 
+                     ContentTemplate="{DataTemplate views:CreateTaskPage}"
+                     Route="CreateTaskPage"/>
 
+        <ShellContent Title="Mes Projets" 
+                     ContentTemplate="{DataTemplate views:ProjectsPage}"
+                     Route="ProjectsPage"/>
+    </FlyoutItem>
 </Shell>

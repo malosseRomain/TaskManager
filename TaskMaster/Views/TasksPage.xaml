@@ -1,64 +1,132 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TaskMaster.ViewModels"
              x:Class="TaskMaster.Views.TasksPage"
              Title="Mes Tâches">
-    
-    <Grid RowDefinitions="Auto, *">
-        <!-- En-tête avec bouton d'ajout -->
-        <HorizontalStackLayout Grid.Row="0" 
-                             Margin="10"
-                             Spacing="10">
-            <Button Text="Nouvelle Tâche"
-                    Clicked="OnNewTaskClicked"
-                    HorizontalOptions="Start"/>
-            
-            <SearchBar Placeholder="Rechercher..."
-                      WidthRequest="200"
-                      HorizontalOptions="End"/>
-        </HorizontalStackLayout>
 
-        <!-- Liste des tâches -->
-        <CollectionView Grid.Row="1"
-                      ItemsSource="{Binding Tasks}"
-                      SelectionMode="Single"
-                      SelectionChanged="OnTaskSelected">
-            
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" 
-                                   VerticalOptions="Center"
-                                   Spacing="10">
-                    <Label Text="Aucune tâche trouvée"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
-                    <Label Text="Cliquez sur 'Nouvelle Tâche' pour en créer une"
-                           FontSize="14"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10" Margin="10">
+            <!-- Première ligne : Nouvelle tâche et recherche -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <Button Text="Nouvelle Tâche"
+                        Grid.Column="0"
+                        BackgroundColor="#B19CD9"
+                        Command="{Binding NavigateToCreateTaskCommand}"/>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="10" Padding="10">
-                        <Grid ColumnDefinitions="*, Auto">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Titre}"
-                                       FontSize="16"
-                                       FontAttributes="Bold"/>
-                                <Label Text="{Binding Description}"
-                                       FontSize="14"/>
-                                <Label Text="{Binding Echeance, StringFormat='Échéance: {0:dd/MM/yyyy}'}"
-                                       FontSize="12"/>
-                            </VerticalStackLayout>
-                            <Label Grid.Column="1"
-                                   Text="{Binding Statut}"
-                                   FontSize="12"
-                                   HorizontalOptions="End"/>
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </Grid>
-</ContentPage> 
+                <SearchBar Grid.Column="1"
+                          Placeholder="Rechercher..."
+                          Text="{Binding SearchText}"
+                          SearchCommand="{Binding SearchCommand}"
+                          BackgroundColor="#2B2B2B"/>
+            </Grid>
+
+            <!-- Deuxième ligne : Filtres -->
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
+                <!-- Options de tri -->
+                <Picker Grid.Column="0"
+                        Title="Trier par"
+                        SelectedItem="{Binding SelectedSortOption}"
+                        BackgroundColor="#B19CD9">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Titre</x:String>
+                            <x:String>Priorité</x:String>
+                            <x:String>Échéance</x:String>
+                            <x:String>Catégorie</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <!-- Ordre de tri -->
+                <Picker Grid.Column="1"
+                        Title="Ordre"
+                        SelectedItem="{Binding SortOrder}"
+                        BackgroundColor="#B19CD9">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Croissant</x:String>
+                            <x:String>Décroissant</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <!-- Type de recherche -->
+                <Picker Grid.Column="2"
+                        Title="Rechercher dans"
+                        SelectedItem="{Binding SearchType}"
+                        BackgroundColor="#B19CD9">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Tout</x:String>
+                            <x:String>Titre</x:String>
+                            <x:String>Description</x:String>
+                            <x:String>Étiquettes</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Grid>
+
+            <!-- Liste des tâches -->
+            <CollectionView Grid.Row="2"
+                          ItemsSource="{Binding FilteredTasks}"
+                          SelectionMode="Single"
+                          SelectionChanged="OnTaskSelected">
+                
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" 
+                                       VerticalOptions="Center"
+                                       Spacing="10">
+                        <Label Text="Aucune tâche trouvée"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Cliquez sur 'Nouvelle Tâche' pour en créer une"
+                               FontSize="14"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="10" Padding="10">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0">
+                                    <!-- Titre et Description -->
+                                    <Label Text="{Binding Titre}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"/>
+                                    <Label Text="{Binding Description}"
+                                           FontSize="14"/>
+                                    
+                                    <!-- Informations -->
+                                    <HorizontalStackLayout Spacing="15">
+                                        <Label Text="{Binding Categorie, StringFormat='Catégorie: {0}'}"/>
+                                        <Label Text="{Binding Statut, StringFormat='Statut: {0}'}"/>
+                                        <Label Text="{Binding Priorite, StringFormat='Priorité: {0}'}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+
+                                <!-- Boutons -->
+                                <HorizontalStackLayout Grid.Column="1" Spacing="5">
+                                    <Button Text="Détails"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:TasksViewModel}}, Path=ViewDetailsCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="LightGreen"/>
+                                    <Button Text="Modifier"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:TasksViewModel}}, Path=ModifyTaskCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="LightBlue"/>
+                                    <Button Text="Supprimer"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:TasksViewModel}}, Path=DeleteTaskCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="LightCoral"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>  

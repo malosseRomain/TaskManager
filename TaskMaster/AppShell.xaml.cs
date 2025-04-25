@@ -1,4 +1,8 @@
 ﻿using TaskMaster.Services;
+using Microsoft.Extensions.DependencyInjection;
+using TaskMaster.ViewModels;
+using System.Web;
+using TaskMaster.Views;
 
 namespace TaskMaster;
 
@@ -15,6 +19,10 @@ public partial class AppShell : Shell
         _authService = authService;
         _authService.AuthStateChanged += OnAuthStateChanged;
         BindingContext = this;
+
+        // Garder uniquement l'enregistrement de la route
+        Routing.RegisterRoute("ModifyTaskPage", typeof(ModifyTaskPage));
+        Routing.RegisterRoute("TaskDetailsPage", typeof(TaskDetailsPage));
     }
 
     private void OnAuthStateChanged(object? sender, EventArgs e)

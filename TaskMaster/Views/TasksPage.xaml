@@ -12,7 +12,8 @@
                 <Button Text="Nouvelle Tâche"
                         Grid.Column="0"
                         BackgroundColor="#B19CD9"
-                        Command="{Binding NavigateToCreateTaskCommand}"/>
+                        Command="{Binding NavigateToCreateTaskCommand}"
+                        Clicked="OnCreateTaskClicked"/>
 
                 <SearchBar Grid.Column="1"
                            Placeholder="Rechercher..."

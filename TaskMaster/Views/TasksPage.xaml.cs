@@ -35,6 +35,21 @@ namespace TaskMaster.Views
             }
         }
 
+        private async void OnCreateTaskClicked(object sender, EventArgs e)
+        {
+            try 
+            {
+                if (BindingContext is TasksViewModel vm && vm.NavigateToCreateTaskCommand.CanExecute(null))
+                {
+                    await vm.NavigateToCreateTaskCommand.ExecuteAsync(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erreur", ex.Message, "OK");
+            }
+        }
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();

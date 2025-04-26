@@ -54,6 +54,9 @@ namespace TaskMaster.ViewModels
         [ObservableProperty]
         private UserDisplay selectedUtilisateur;
 
+        [ObservableProperty]
+        private bool isBusy;
+
         public List<string> Categories { get; } = Enum.GetNames(typeof(TaskCategory)).ToList();
         public List<string> Priorites { get; } = Enum.GetNames(typeof(TaskPriority)).ToList();
         public List<StatusDisplay> Statuts { get; } = StatusDisplay.GetStatusDisplays();
@@ -197,6 +200,26 @@ namespace TaskMaster.ViewModels
             catch (Exception ex)
             {
                 await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
+            }
+        }
+
+        [RelayCommand]
+        private async Task NavigateToCreateTask()
+        {
+            if (IsBusy) return;
+
+            try
+            {
+                IsBusy = true;
+                await Shell.Current.GoToAsync(nameof(CreateTaskPage));
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
     }

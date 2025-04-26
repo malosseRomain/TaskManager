@@ -32,12 +32,13 @@
                          ContentTemplate="{DataTemplate views:TasksPage}"
                          Route="TasksPage"/>
 
-        <ShellContent Title="Nouvelle Tâche" 
-                     ContentTemplate="{DataTemplate views:CreateTaskPage}"
-                     Route="CreateTaskPage"/>
+            <ShellContent Title="Nouvelle Tâche" 
+                         ContentTemplate="{DataTemplate views:CreateTaskPage}"
+                         Route="CreateTaskPage"/>
 
-        <ShellContent Title="Mes Projets" 
-                     ContentTemplate="{DataTemplate views:ProjectsPage}"
-                     Route="ProjectsPage"/>
+            <ShellContent Title="Mes Projets" 
+                         ContentTemplate="{DataTemplate views:ProjectsPage}"
+                         Route="ProjectsPage"/>
+        </Tab>
     </FlyoutItem>
 </Shell>

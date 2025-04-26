@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using System.Diagnostics;
+using TaskMaster.Views;
 
 namespace TaskMaster.ViewModels
 {
@@ -34,6 +36,9 @@ namespace TaskMaster.ViewModels
 
         [ObservableProperty]
         private string searchType;
+
+        [ObservableProperty]
+        private bool _isBusy;
 
         public ICommand SortByPriorityCommand { get; }
         public ICommand SortByDueDateCommand { get; }
@@ -167,15 +172,23 @@ namespace TaskMaster.ViewModels
         }
 
         [RelayCommand]
-        private async Task NavigateToCreateTaskAsync()
+        private async Task NavigateToCreateTask()
         {
+            if (IsBusy) return;
+            
             try
             {
-                await Shell.Current.GoToAsync("//CreateTaskPage");
+                IsBusy = true;
+                await Shell.Current.GoToAsync(nameof(CreateTaskPage));
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Erreur", "Impossible de naviguer vers la page de création : " + ex.Message, "OK");
+                Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlert("Erreur", "Impossible d'ouvrir la page", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

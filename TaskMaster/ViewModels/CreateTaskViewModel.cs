@@ -7,6 +7,7 @@ using TaskMaster.Services;
 using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
 using TaskMaster.Views;
+using System.Linq;
 
 namespace TaskMaster.ViewModels
 {
@@ -226,6 +227,41 @@ namespace TaskMaster.ViewModels
             catch (Exception ex)
             {
                 await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task SupprimerTacheAsync(TaskItem task)
+        {
+            if (task == null || IsBusy) return;
+
+            try
+            {
+                IsBusy = true;
+
+                // Détacher l'entité si elle est déjà suivie
+                var existingTask = _context.Tasks.Local.FirstOrDefault(t => t.Id_Task == task.Id_Task);
+                if (existingTask != null)
+                {
+                    _context.Entry(existingTask).State = EntityState.Detached;
+                }
+
+                // Recharger l'entité depuis la base de données pour s'assurer qu'elle n'est pas suivie
+                var taskToDelete = await _context.Tasks.FindAsync(task.Id_Task);
+                if (taskToDelete != null)
+                {
+                    _context.Tasks.Remove(taskToDelete);
+                    await _context.SaveChangesAsync();
+                    await Shell.Current.DisplayAlert("Succès", "Tâche supprimée avec succès !", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Erreur", $"Impossible de supprimer la tâche : {ex.Message}", "OK");
             }
             finally
             {

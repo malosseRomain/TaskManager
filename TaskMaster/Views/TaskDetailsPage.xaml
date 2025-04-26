@@ -63,12 +63,12 @@
                 <Grid ColumnDefinitions="*, *">
                     <VerticalStackLayout Grid.Column="0">
                         <Label Text="Créée par" FontAttributes="Bold"/>
-                        <Label Text="{Binding Task.Auteur.Username}"/>
+                        <Label Text="{Binding Task.Auteur.DisplayName}"/>
                     </VerticalStackLayout>
                     
                     <VerticalStackLayout Grid.Column="1">
                         <Label Text="Assignée à" FontAttributes="Bold"/>
-                        <Label Text="{Binding Task.Realisateur.Username}"/>
+                        <Label Text="{Binding Task.Realisateur.DisplayName}"/>
                     </VerticalStackLayout>
                 </Grid>
             </Frame>
@@ -81,6 +81,24 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Label Text="{Binding Titre}"/>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Commentaires si existants -->
+            <Frame BorderColor="Gray" Padding="10" IsVisible="{Binding HasComments}">
+                <VerticalStackLayout>
+                    <Label Text="Commentaires" FontAttributes="Bold"/>
+                    <CollectionView ItemsSource="{Binding Task.Commentaires}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding Contenu}" FontSize="14"/>
+                                    <Label Text="{Binding DateCreation, StringFormat='{0:dd/MM/yyyy}'}" FontSize="12" TextColor="Gray"/>
+                                    <Label Text="{Binding Auteur.DisplayName}" FontSize="12" TextColor="Gray"/>
+                                </VerticalStackLayout>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>

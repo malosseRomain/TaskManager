@@ -59,7 +59,6 @@ namespace TaskMaster.Services
             return true;
         }
 
-
         public void Logout()
         {
             _currentUser = null;
@@ -71,5 +70,11 @@ namespace TaskMaster.Services
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
+        public Task LogoutAsync()
+        {
+            _currentUser = null;
+            AuthStateChanged?.Invoke(this, EventArgs.Empty);
+            return Task.CompletedTask;
+        }
     }
 } 

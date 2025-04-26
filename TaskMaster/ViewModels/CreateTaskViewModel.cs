@@ -66,11 +66,14 @@ namespace TaskMaster.ViewModels
             _context = context;
             _authService = authService;
             InitialiserFormulaire();
-            ChargerProjets();
-            ChargerUtilisateurs();
+            Task.Run(async () =>
+            {
+                await ChargerProjets();
+                await ChargerUtilisateurs();
+            }).Wait();
         }
 
-        private async void ChargerProjets()
+        private async Task ChargerProjets()
         {
             var currentUser = _authService.CurrentUser;
             if (currentUser == null) return;
@@ -86,7 +89,7 @@ namespace TaskMaster.ViewModels
             }
         }
 
-        private async void ChargerUtilisateurs()
+        private async Task ChargerUtilisateurs()
         {
             var users = await _context.Users.ToListAsync();
             Utilisateurs.Clear();
@@ -142,8 +145,11 @@ namespace TaskMaster.ViewModels
         [RelayCommand]
         public async Task CreateTaskAsync()
         {
+            if (IsBusy) return;
+
             try
             {
+                IsBusy = true;
                 var currentUser = _authService.CurrentUser;
                 if (currentUser == null)
                 {
@@ -200,6 +206,10 @@ namespace TaskMaster.ViewModels
             catch (Exception ex)
             {
                 await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

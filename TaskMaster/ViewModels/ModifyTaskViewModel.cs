@@ -9,6 +9,7 @@ using TaskMaster.Models;
 using TaskMaster.Data;
 using System.Collections.ObjectModel;
 using TaskStatus = TaskMaster.Models.TaskStatus;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskMaster.ViewModels
 {
@@ -46,7 +47,10 @@ namespace TaskMaster.ViewModels
         {
             if (query.TryGetValue("taskId", out var value) && value is int taskId)
             {
-                Task = _context.Tasks.FirstOrDefault(t => t.Id_Task == taskId);
+                Task = _context.Tasks
+                    .Include(t => t.SousTaches)
+                    .Include(t => t.Commentaires)
+                    .FirstOrDefault(t => t.Id_Task == taskId);
             }
         }
 
@@ -141,6 +145,33 @@ namespace TaskMaster.ViewModels
                     });
                 }
             }
+
+            Commentaires.Clear();
+            if (value?.Commentaires != null)
+            {
+                foreach (var c in value.Commentaires)
+                {
+                    Commentaires.Add(new CommentViewModel
+                    {
+                        Contenu = c.Contenu
+                    });
+                }
+            }
+
+            // Synchroniser les autres champs
+            Etiquettes = value?.Etiquettes ?? string.Empty;
+
+            // Projet sélectionné
+            if (value?.Id_Projet != null && Projets.Any())
+                SelectedProjet = Projets.FirstOrDefault(p => p.Id_Projet == value.Id_Projet);
+            else
+                SelectedProjet = null;
+
+            // Utilisateur assigné
+            if (value?.Id_Realisateur != null && Utilisateurs.Any())
+                SelectedUtilisateur = Utilisateurs.FirstOrDefault(u => u.Id == value.Id_Realisateur);
+            else
+                SelectedUtilisateur = null;
         }
     }
 }

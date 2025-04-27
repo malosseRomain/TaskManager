@@ -304,37 +304,25 @@ namespace TaskMaster.ViewModels
         }
 
         // Nouvelle méthode pour mettre à jour une tâche spécifique
-        public async Task UpdateTaskInListAsync(int taskId)
+        public async Task UpdateTaskInListAsync(TaskItem modifiedTask)
         {
-            try
+            var taskToUpdate = Tasks.FirstOrDefault(t => t.Id_Task == modifiedTask.Id_Task);
+            if (taskToUpdate != null)
             {
-                var updatedTask = await _taskService.GetTaskByIdAsync(taskId);
-                if (updatedTask != null)
+                Tasks.Remove(taskToUpdate);
+                Tasks.Add(modifiedTask);
+
+                // Mise à jour dans FilteredTasks
+                var filteredTaskToUpdate = FilteredTasks.FirstOrDefault(t => t.Id_Task == modifiedTask.Id_Task);
+                if (filteredTaskToUpdate != null)
                 {
-                    // Mettre à jour dans la liste principale
-                    var existingTaskIndex = Tasks.ToList().FindIndex(t => t.Id_Task == taskId);
-                    if (existingTaskIndex != -1)
-                    {
-                        Tasks.RemoveAt(existingTaskIndex);
-                        Tasks.Insert(existingTaskIndex, updatedTask);
-                    }
-
-                    // Mettre à jour dans la liste filtrée
-                    var existingFilteredTaskIndex = FilteredTasks.ToList().FindIndex(t => t.Id_Task == taskId);
-                    if (existingFilteredTaskIndex != -1)
-                    {
-                        FilteredTasks.RemoveAt(existingFilteredTaskIndex);
-                        FilteredTasks.Insert(existingFilteredTaskIndex, updatedTask);
-                    }
-
-                    // Forcer le rafraîchissement de l'interface
-                    OnPropertyChanged(nameof(Tasks));
-                    OnPropertyChanged(nameof(FilteredTasks));
+                    FilteredTasks.Remove(filteredTaskToUpdate);
+                    FilteredTasks.Add(modifiedTask);
                 }
-            }
-            catch (Exception ex)
-            {
-                await Shell.Current.DisplayAlert("Erreur", $"Impossible de mettre à jour la tâche : {ex.Message}", "OK");
+
+                // Notifier les changements
+                OnPropertyChanged(nameof(Tasks));
+                OnPropertyChanged(nameof(FilteredTasks));
             }
         }
 
@@ -354,6 +342,79 @@ namespace TaskMaster.ViewModels
             {
                 await Shell.Current.DisplayAlert("Erreur", "Impossible de rafraîchir les tâches : " + ex.Message, "OK");
             }
+        }
+
+        public void ReloadTasks()
+        {
+            var currentUser = _authService.CurrentUser;
+            if (currentUser != null)
+            {
+                Tasks = new ObservableCollection<TaskItem>(
+                    _context.Tasks
+                        .Where(t => t.Id_Auteur == currentUser.Id_User || t.Id_Realisateur == currentUser.Id_User)
+                        .ToList()
+                );
+                ApplyFiltersAndSort(); // Met à jour FilteredTasks
+            }
+            else
+            {
+                Tasks.Clear();
+            }
+            OnPropertyChanged(nameof(Tasks));
+            OnPropertyChanged(nameof(FilteredTasks));
+        }
+
+        public void ForceReload()
+        {
+            Tasks = new ObservableCollection<TaskItem>(
+                _context.Tasks
+                    .Where(t => t.Id_Auteur == _authService.CurrentUser.Id_User || 
+                               t.Id_Realisateur == _authService.CurrentUser.Id_User)
+                    .AsNoTracking() // Important pour éviter les conflits
+                    .ToList()
+            );
+            ApplyFiltersAndSort();
+            OnPropertyChanged(nameof(Tasks));
+            OnPropertyChanged(nameof(FilteredTasks));
+            Debug.WriteLine("Forced reload executed"); // Vérifiez dans la console
+        }
+
+        public void HardRefresh()
+        {
+            // 1. Détache toutes les entités suivies
+            _context.ChangeTracker.Clear();
+
+            // 2. Recharge avec une nouvelle requête
+            var freshData = _context.Tasks
+                .Where(t => t.Id_Auteur == _authService.CurrentUser.Id_User)
+                .AsNoTracking()
+                .ToList();
+
+            // 3. Réinitialise complètement les collections
+            Tasks.Clear();
+            foreach (var item in freshData) Tasks.Add(item);
+            
+            ApplyFiltersAndSort();
+            
+            // 4. Force la mise à jour de l'UI
+            OnPropertyChanged(nameof(Tasks));
+            OnPropertyChanged(nameof(FilteredTasks));
+            
+            Debug.WriteLine($"HARD REFRESH - {Tasks.Count} tâches chargées");
+        }
+
+        public void RefreshTaskList()
+        {
+            var currentUser = _authService.CurrentUser;
+            if (currentUser == null) return;
+
+            Tasks = new ObservableCollection<TaskItem>(
+                _context.Tasks
+                    .Where(t => t.Id_Auteur == currentUser.Id_User)
+                    .AsNoTracking()
+                    .ToList()
+            );
+            ApplyFiltersAndSort();
         }
     }
 } 

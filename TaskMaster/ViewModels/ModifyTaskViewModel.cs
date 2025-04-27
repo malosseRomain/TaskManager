@@ -57,76 +57,21 @@ namespace TaskMaster.ViewModels
         [RelayCommand]
         private async Task SaveAsync()
         {
-            if (Task == null || Task.Id_Task == 0)
-            {
-                await Shell.Current.DisplayAlert("Erreur", "Tâche invalide", "OK");
-                return;
-            }
-
             try
             {
-                var existingTask = await _context.Tasks.FindAsync(Task.Id_Task);
-                if (existingTask == null)
-                {
-                    await Shell.Current.DisplayAlert("Erreur", "Tâche introuvable", "OK");
-                    return;
-                }
-
-                existingTask.Titre = Task.Titre;
-                existingTask.Description = Task.Description;
-                existingTask.Echeance = Task.Echeance;
-                existingTask.Categorie = Task.Categorie;
-                existingTask.Priorite = Task.Priorite;
-                existingTask.Statut = Task.Statut;
-                existingTask.Etiquettes = Task.Etiquettes;
-                existingTask.Id_Projet = Task.Id_Projet;
-                existingTask.Id_Realisateur = Task.Id_Realisateur;
-
-                // --- Gestion des sous-tâches ---
-                // Suppression des sous-tâches retirées
-                var sousTachesToRemove = Task.SousTaches
-                    .Where(st => !SousTaches.Any(vm => vm.Id_SubTask == st.Id_SubTask))
-                    .ToList();
-                foreach (var st in sousTachesToRemove)
-                    _context.SubTasks.Remove(st);
-
-                // Ajout ou modification des sous-tâches
-                foreach (var vm in SousTaches)
-                {
-                    var existing = Task.SousTaches.FirstOrDefault(st => st.Id_SubTask == vm.Id_SubTask);
-                    if (existing != null)
-                    {
-                        // Modification
-                        existing.Titre = vm.Titre;
-                        existing.Echeance = vm.Echeance;
-                        // etc.
-                    }
-                    else
-                    {
-                        // Ajout
-                        Task.SousTaches.Add(new SubTask
-                        {
-                            Titre = vm.Titre,
-                            Echeance = vm.Echeance,
-                            Statut = TaskStatus.Afaire, // ou autre valeur par défaut
-                            Id_TaskParent = Task.Id_Task
-                        });
-                    }
-                }
-
-                // --- Gestion des commentaires ---
-                // Même logique que pour les sous-tâches
-
+                _context.Update(Task);
                 await _context.SaveChangesAsync();
                 
-                // Forcer un rafraîchissement complet
-                await _tasksViewModel.RefreshTasksAsync();
+                if (App.Current.MainPage.BindingContext is TasksViewModel tasksVM)
+                {
+                    tasksVM.RefreshTaskList();
+                }
                 
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Erreur", $"Erreur lors de la sauvegarde : {ex.Message}", "OK");
+                await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
             }
         }
 

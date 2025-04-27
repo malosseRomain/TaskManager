@@ -50,12 +50,11 @@ namespace TaskMaster.Views
             }
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
-            base.OnAppearing();
-            if (BindingContext is TasksViewModel viewModel)
+            if (BindingContext is TasksViewModel vm)
             {
-                await viewModel.RefreshTasksAsync();
+                vm.RefreshTaskList();
             }
         }
     }

@@ -211,9 +211,18 @@ namespace TaskMaster.ViewModels
                 {
                     try
                     {
-                        _context.Tasks.Remove(task);
-                        await _context.SaveChangesAsync();
-                        await LoadTasksAsync();
+                        // Récupère l'instance suivie par le contexte
+                        var trackedTask = await _context.Tasks.FindAsync(task.Id_Task);
+                        if (trackedTask != null)
+                        {
+                            _context.Tasks.Remove(trackedTask);
+                            await _context.SaveChangesAsync();
+                            await LoadTasksAsync();
+                        }
+                        else
+                        {
+                            await Shell.Current.DisplayAlert("Erreur", "Tâche introuvable", "OK");
+                        }
                     }
                     catch (Exception ex)
                     {

@@ -25,5 +25,7 @@ namespace TaskMaster.Models
         public string Password { get; set; }
 
         public ICollection<Commentaire> Commentaires { get; set; }
+
+        public string DisplayName => $"{Prenom} {Nom}";
     }
 }

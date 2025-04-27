@@ -60,15 +60,18 @@
 
             <!-- Assignation -->
             <Frame BorderColor="Gray" Padding="10">
-                <Grid ColumnDefinitions="*, *">
+                <Grid ColumnDefinitions="*, *, *">
                     <VerticalStackLayout Grid.Column="0">
                         <Label Text="Créée par" FontAttributes="Bold"/>
                         <Label Text="{Binding Task.Auteur.DisplayName}"/>
                     </VerticalStackLayout>
-                    
                     <VerticalStackLayout Grid.Column="1">
                         <Label Text="Assignée à" FontAttributes="Bold"/>
                         <Label Text="{Binding Task.Realisateur.DisplayName}"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2">
+                        <Label Text="Projet" FontAttributes="Bold"/>
+                        <Label Text="{Binding Task.Projet.Nom}"/>
                     </VerticalStackLayout>
                 </Grid>
             </Frame>

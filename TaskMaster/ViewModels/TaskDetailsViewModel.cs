@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using TaskMaster.Views;
 using TaskMaster.Services;
+using System.Diagnostics;
 
 namespace TaskMaster.ViewModels
 {
@@ -42,6 +43,7 @@ namespace TaskMaster.ViewModels
                 Task = _context.Tasks
                     .Include(t => t.Auteur)
                     .Include(t => t.Realisateur)
+                    .Include(t => t.Projet)
                     .Include(t => t.SousTaches)
                     .Include(t => t.Commentaires)
                         .ThenInclude(c => c.Auteur)
@@ -60,6 +62,7 @@ namespace TaskMaster.ViewModels
                     .ThenInclude(c => c.Auteur)
                 .Include(t => t.Auteur)
                 .Include(t => t.Realisateur)
+                .Include(t => t.Projet)
                 .FirstOrDefaultAsync(t => t.Id_Task == taskId);
 
             if (Task != null)
@@ -67,6 +70,10 @@ namespace TaskMaster.ViewModels
                 HasSubTasks = Task.SousTaches?.Any() ?? false;
                 HasComments = Task.Commentaires?.Any() ?? false;
             }
+
+            Debug.WriteLine($"Auteur: {Task?.Auteur?.DisplayName}");
+            Debug.WriteLine($"Realisateur: {Task?.Realisateur?.DisplayName}");
+            Debug.WriteLine($"Projet: {Task?.Projet?.Nom}");
         }
     }
 }

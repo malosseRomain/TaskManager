@@ -10,6 +10,7 @@ using TaskMaster.Data;
 using System.Collections.ObjectModel;
 using TaskStatus = TaskMaster.Models.TaskStatus;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace TaskMaster.ViewModels
 {
@@ -31,9 +32,11 @@ namespace TaskMaster.ViewModels
         public ObservableCollection<SubTaskViewModel> SousTaches { get; set; } = new();
         public ObservableCollection<CommentViewModel> Commentaires { get; set; } = new();
         public ObservableCollection<Projet> Projets { get; set; } = new();
-        public Projet SelectedProjet { get; set; }
+        [ObservableProperty]
+        private Projet selectedProjet;
         public ObservableCollection<UserDisplay> Utilisateurs { get; set; } = new();
-        public UserDisplay SelectedUtilisateur { get; set; }
+        [ObservableProperty]
+        private UserDisplay selectedUtilisateur;
         public string Etiquettes { get; set; }
 
         public ModifyTaskViewModel(AppDbContext context, TasksViewModel tasksViewModel)
@@ -43,14 +46,11 @@ namespace TaskMaster.ViewModels
             Task = new TaskItem();
         }
 
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             if (query.TryGetValue("taskId", out var value) && value is int taskId)
             {
-                Task = _context.Tasks
-                    .Include(t => t.SousTaches)
-                    .Include(t => t.Commentaires)
-                    .FirstOrDefault(t => t.Id_Task == taskId);
+                await InitialiserAsync(taskId);
             }
         }
 
@@ -172,6 +172,48 @@ namespace TaskMaster.ViewModels
                 SelectedUtilisateur = Utilisateurs.FirstOrDefault(u => u.Id == value.Id_Realisateur);
             else
                 SelectedUtilisateur = null;
+
+            System.Diagnostics.Debug.WriteLine($"Id_Projet de la tâche : {value?.Id_Projet}");
+            foreach (var p in Projets)
+                System.Diagnostics.Debug.WriteLine($"Projet: {p.Id_Projet} - {p.Nom}");
+
+            System.Diagnostics.Debug.WriteLine($"Id_Realisateur de la tâche : {value?.Id_Realisateur}");
+            foreach (var u in Utilisateurs)
+                System.Diagnostics.Debug.WriteLine($"Utilisateur: {u.Id} - {u.DisplayName}");
+        }
+
+        private async Task ChargerProjets()
+        {
+            var projets = await _context.Projets.ToListAsync();
+            Projets.Clear();
+            foreach (var projet in projets)
+                Projets.Add(projet);
+        }
+
+        private async Task ChargerUtilisateurs()
+        {
+            var users = await _context.Users.ToListAsync();
+            Utilisateurs.Clear();
+            foreach (var user in users)
+            {
+                Utilisateurs.Add(new UserDisplay
+                {
+                    Id = user.Id_User,
+                    DisplayName = $"{user.Prenom} {user.Nom}"
+                });
+            }
+        }
+
+        public async Task InitialiserAsync(int taskId)
+        {
+            await ChargerProjets();
+            await ChargerUtilisateurs();
+
+            Task = await _context.Tasks
+                .Include(t => t.SousTaches)
+                .Include(t => t.Commentaires)
+                .FirstOrDefaultAsync(t => t.Id_Task == taskId);
+            // OnTaskChanged sera appelé automatiquement
         }
     }
 }

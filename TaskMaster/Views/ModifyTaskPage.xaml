@@ -39,12 +39,14 @@
             <!-- Projet -->
             <Label Text="Projet" FontAttributes="Bold"/>
             <Picker ItemsSource="{Binding Projets}"
-                    SelectedItem="{Binding Task.Projet}"/>
+                    ItemDisplayBinding="{Binding Nom}"
+                    SelectedItem="{Binding SelectedProjet, Mode=TwoWay}"/>
 
             <!-- Utilisateur assigné -->
             <Label Text="Utilisateur assigné" FontAttributes="Bold"/>
             <Picker ItemsSource="{Binding Utilisateurs}"
-                    SelectedItem="{Binding Task.UtilisateurAssigne}"/>
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    SelectedItem="{Binding SelectedUtilisateur, Mode=TwoWay}"/>
 
             <!-- Étiquettes -->
             <Label Text="Étiquettes" FontAttributes="Bold"/>

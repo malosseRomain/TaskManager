@@ -7,6 +7,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TaskMaster.Models;
 using TaskMaster.Data;
+using System.Collections.ObjectModel;
+using TaskStatus = TaskMaster.Models.TaskStatus;
 
 namespace TaskMaster.ViewModels
 {
@@ -24,6 +26,14 @@ namespace TaskMaster.ViewModels
             Enum.GetValues(typeof(TaskMaster.Models.TaskStatus))
                 .Cast<TaskMaster.Models.TaskStatus>()
                 .ToList();
+
+        public ObservableCollection<SubTaskViewModel> SousTaches { get; set; } = new();
+        public ObservableCollection<CommentViewModel> Commentaires { get; set; } = new();
+        public ObservableCollection<Projet> Projets { get; set; } = new();
+        public Projet SelectedProjet { get; set; }
+        public ObservableCollection<UserDisplay> Utilisateurs { get; set; } = new();
+        public UserDisplay SelectedUtilisateur { get; set; }
+        public string Etiquettes { get; set; }
 
         public ModifyTaskViewModel(AppDbContext context, TasksViewModel tasksViewModel)
         {
@@ -65,6 +75,43 @@ namespace TaskMaster.ViewModels
                 existingTask.Priorite = Task.Priorite;
                 existingTask.Statut = Task.Statut;
                 existingTask.Etiquettes = Task.Etiquettes;
+                existingTask.Id_Projet = Task.Id_Projet;
+                existingTask.Id_Realisateur = Task.Id_Realisateur;
+
+                // --- Gestion des sous-tâches ---
+                // Suppression des sous-tâches retirées
+                var sousTachesToRemove = Task.SousTaches
+                    .Where(st => !SousTaches.Any(vm => vm.Id_SubTask == st.Id_SubTask))
+                    .ToList();
+                foreach (var st in sousTachesToRemove)
+                    _context.SubTasks.Remove(st);
+
+                // Ajout ou modification des sous-tâches
+                foreach (var vm in SousTaches)
+                {
+                    var existing = Task.SousTaches.FirstOrDefault(st => st.Id_SubTask == vm.Id_SubTask);
+                    if (existing != null)
+                    {
+                        // Modification
+                        existing.Titre = vm.Titre;
+                        existing.Echeance = vm.Echeance;
+                        // etc.
+                    }
+                    else
+                    {
+                        // Ajout
+                        Task.SousTaches.Add(new SubTask
+                        {
+                            Titre = vm.Titre,
+                            Echeance = vm.Echeance,
+                            Statut = TaskStatus.Afaire, // ou autre valeur par défaut
+                            Id_TaskParent = Task.Id_Task
+                        });
+                    }
+                }
+
+                // --- Gestion des commentaires ---
+                // Même logique que pour les sous-tâches
 
                 await _context.SaveChangesAsync();
                 
@@ -76,6 +123,23 @@ namespace TaskMaster.ViewModels
             catch (Exception ex)
             {
                 await Shell.Current.DisplayAlert("Erreur", $"Erreur lors de la sauvegarde : {ex.Message}", "OK");
+            }
+        }
+
+        partial void OnTaskChanged(TaskItem value)
+        {
+            SousTaches.Clear();
+            if (value?.SousTaches != null)
+            {
+                foreach (var st in value.SousTaches)
+                {
+                    SousTaches.Add(new SubTaskViewModel
+                    {
+                        Id_SubTask = st.Id_SubTask,
+                        Titre = st.Titre,
+                        Echeance = st.Echeance
+                    });
+                }
             }
         }
     }

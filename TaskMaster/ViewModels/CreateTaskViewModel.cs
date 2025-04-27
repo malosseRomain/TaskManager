@@ -272,6 +272,8 @@ namespace TaskMaster.ViewModels
 
     public partial class SubTaskViewModel : ObservableObject
     {
+        public int? Id_SubTask { get; set; }
+
         public SubTaskViewModel()
         {
             Echeance = DateTime.Now.AddDays(7);

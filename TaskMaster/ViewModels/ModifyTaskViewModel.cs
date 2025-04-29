@@ -29,7 +29,7 @@ namespace TaskMaster.ViewModels
                 .Cast<TaskMaster.Models.TaskStatus>()
                 .ToList();
 
-        public ObservableCollection<SubTaskViewModel> SousTaches { get; set; } = new();
+        public ObservableCollection<SubTask> SousTaches { get; set; } = new();
         public ObservableCollection<Commentaire> Commentaires { get; set; } = new();
         public ObservableCollection<Projet> Projets { get; set; } = new();
         [ObservableProperty]
@@ -59,16 +59,15 @@ namespace TaskMaster.ViewModels
         {
             try
             {
-                // Validez les commentaires avant sauvegarde
-                var commentairesValides = Commentaires
-                    .Where(c => !string.IsNullOrEmpty(c.Contenu) && c.Id_Auteur > 0)
+                // 1. Mettez à jour les sous-tâches
+                Task.SousTaches = SousTaches
+                    .Where(st => !string.IsNullOrEmpty(st.Titre))
                     .ToList();
 
-                Task.Commentaires.Clear();
-                foreach (var c in commentairesValides)
-                {
-                    Task.Commentaires.Add(c);
-                }
+                // 2. Mettez à jour les commentaires
+                Task.Commentaires = Commentaires
+                    .Where(c => !string.IsNullOrEmpty(c.Contenu) && Utilisateurs.Any(u => u.Id == c.Id_Auteur))
+                    .ToList();
 
                 await _context.SaveChangesAsync();
                 await Shell.Current.GoToAsync("..");
@@ -82,9 +81,11 @@ namespace TaskMaster.ViewModels
         [RelayCommand]
         private void AjouterSousTache()
         {
-            SousTaches.Add(new SubTaskViewModel
+            SousTaches.Add(new SubTask
             {
                 Titre = "",
+                Id_TaskParent = Task.Id_Task,
+                Statut = TaskStatus.Afaire,
                 Echeance = DateTime.Now
             });
         }
@@ -94,7 +95,7 @@ namespace TaskMaster.ViewModels
         {
             if (SelectedUtilisateur == null)
             {
-                Shell.Current.DisplayAlert("Erreur", "Aucun utilisateur sélectionné", "OK");
+                Shell.Current.DisplayAlert("Erreur", "Sélectionnez un utilisateur", "OK");
                 return;
             }
 
@@ -108,7 +109,7 @@ namespace TaskMaster.ViewModels
         }
 
         [RelayCommand]
-        private void SupprimerSousTache(SubTaskViewModel sousTache)
+        private void SupprimerSousTache(SubTask sousTache)
         {
             if (sousTache != null)
             {
@@ -126,34 +127,45 @@ namespace TaskMaster.ViewModels
         [RelayCommand]
         private void SupprimerCommentaire(Commentaire commentaire)
         {
-            if (commentaire != null)
+            try
             {
+                if (commentaire == null) return;
+                
+                // Supprime de la liste observable
                 Commentaires.Remove(commentaire);
                 
-                // Si le commentaire est déjà en base de données, marquez-le pour suppression
+                // Si le commentaire existe en base, le marque pour suppression
                 if (commentaire.Id_Commentaire != 0)
                 {
                     _context.Commentaires.Remove(commentaire);
                 }
             }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Erreur suppression commentaire: {ex.Message}");
+            }
         }
 
         partial void OnTaskChanged(TaskItem value)
         {
+            // Sous-tâches
             SousTaches.Clear();
             if (value?.SousTaches != null)
             {
                 foreach (var st in value.SousTaches)
                 {
-                    SousTaches.Add(new SubTaskViewModel
+                    SousTaches.Add(new SubTask
                     {
                         Id_SubTask = st.Id_SubTask,
                         Titre = st.Titre,
-                        Echeance = st.Echeance
+                        Echeance = st.Echeance,
+                        Id_TaskParent = st.Id_TaskParent,
+                        Statut = st.Statut
                     });
                 }
             }
 
+            // Commentaires
             Commentaires.Clear();
             if (value?.Commentaires != null)
             {
@@ -161,7 +173,11 @@ namespace TaskMaster.ViewModels
                 {
                     Commentaires.Add(new Commentaire
                     {
-                        Contenu = c.Contenu
+                        Id_Commentaire = c.Id_Commentaire,
+                        Contenu = c.Contenu,
+                        Id_Task = c.Id_Task,
+                        Id_Auteur = c.Id_Auteur,
+                        DateCreation = c.DateCreation
                     });
                 }
             }
@@ -222,7 +238,7 @@ namespace TaskMaster.ViewModels
                 .Include(t => t.Commentaires)
                 .FirstOrDefaultAsync(t => t.Id_Task == taskId);
 
-            // Assignez l'utilisateur par défaut si nécessaire
+            // Assignez l'utilisateur par défaut si la tâche en a un
             if (Task.Id_Realisateur != null)
             {
                 SelectedUtilisateur = Utilisateurs.FirstOrDefault(u => u.Id == Task.Id_Realisateur);

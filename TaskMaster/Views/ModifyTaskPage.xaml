@@ -100,8 +100,11 @@
                                         </VerticalStackLayout>
                                         <Button Grid.Column="1"
                                                 Text="×"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ModifyTaskViewModel}}, Path=SupprimerCommentaireCommand}"
-                                                CommandParameter="{Binding .}"/>
+                                                Command="{Binding SupprimerCommentaireCommand, Source={RelativeSource AncestorType={x:Type viewModels:ModifyTaskViewModel}}}"
+                                                CommandParameter="{Binding}"
+                                                WidthRequest="40"
+                                                BackgroundColor="Red"
+                                                TextColor="White"/>
                                     </Grid>
                                 </Frame>
                             </DataTemplate>

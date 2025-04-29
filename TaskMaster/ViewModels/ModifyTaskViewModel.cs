@@ -59,19 +59,104 @@ namespace TaskMaster.ViewModels
         {
             try
             {
-                _context.Update(Task);
-                await _context.SaveChangesAsync();
-                
-                if (App.Current.MainPage.BindingContext is TasksViewModel tasksVM)
+                // Désactivez le suivi des entités pour éviter les conflits
+                _context.ChangeTracker.Clear();
+
+                // Mettez à jour les sous-tâches
+                foreach (var stViewModel in SousTaches)
                 {
-                    tasksVM.RefreshTaskList();
+                    var existingSubTask = Task.SousTaches.FirstOrDefault(st => st.Id_SubTask == stViewModel.Id_SubTask);
+                    if (existingSubTask != null)
+                    {
+                        existingSubTask.Titre = stViewModel.Titre;
+                        existingSubTask.Echeance = stViewModel.Echeance;
+                        _context.Entry(existingSubTask).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        Task.SousTaches.Add(new SubTask
+                        {
+                            Titre = stViewModel.Titre,
+                            Echeance = stViewModel.Echeance,
+                            Id_TaskParent = Task.Id_Task
+                        });
+                    }
                 }
-                
+
+                // Mettez à jour les commentaires
+                foreach (var cViewModel in Commentaires)
+                {
+                    var commentaireExistant = Task.Commentaires.FirstOrDefault(c => c.Contenu == cViewModel.Contenu);
+                    if (commentaireExistant == null)
+                    {
+                        Task.Commentaires.Add(new Commentaire
+                        {
+                            Contenu = cViewModel.Contenu,
+                            Id_Task = Task.Id_Task,
+                            Id_Auteur = 1, // REMPLACEZ PAR UN ID VALIDE
+                            DateCreation = DateTime.Now
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Erreur", ex.Message, "OK");
+                await Shell.Current.DisplayAlert("Erreur", ex.InnerException?.Message ?? ex.Message, "OK");
+            }
+        }
+
+        [RelayCommand]
+        private void AjouterSousTache()
+        {
+            SousTaches.Add(new SubTaskViewModel
+            {
+                Titre = "",
+                Echeance = DateTime.Now
+            });
+        }
+
+        [RelayCommand]
+        private void AjouterCommentaire()
+        {
+            Commentaires.Add(new CommentViewModel
+            {
+                Contenu = ""
+            });
+        }
+
+        [RelayCommand]
+        private void SupprimerSousTache(SubTaskViewModel sousTache)
+        {
+            if (sousTache != null)
+            {
+                SousTaches.Remove(sousTache);
+                
+                // Supprimez également la sous-tâche de la base de données si elle existe déjà
+                var sousTacheExistante = Task.SousTaches.FirstOrDefault(st => st.Id_SubTask == sousTache.Id_SubTask);
+                if (sousTacheExistante != null)
+                {
+                    Task.SousTaches.Remove(sousTacheExistante);
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void SupprimerCommentaire(CommentViewModel commentaire)
+        {
+            if (commentaire != null)
+            {
+                // 1. Supprimez le CommentViewModel de la liste observable
+                Commentaires.Remove(commentaire);
+
+                // 2. Trouvez et marquez le Commentaire associé pour suppression
+                var commentaireExistant = Task.Commentaires.FirstOrDefault(c => c.Contenu == commentaire.Contenu && c.Id_Auteur == 1); // Adaptez Id_Auteur si nécessaire
+                if (commentaireExistant != null)
+                {
+                    _context.Commentaires.Remove(commentaireExistant); // Suppression explicite du contexte
+                }
             }
         }
 

@@ -30,7 +30,7 @@ namespace TaskMaster.ViewModels
                 .ToList();
 
         public ObservableCollection<SubTaskViewModel> SousTaches { get; set; } = new();
-        public ObservableCollection<CommentViewModel> Commentaires { get; set; } = new();
+        public ObservableCollection<Commentaire> Commentaires { get; set; } = new();
         public ObservableCollection<Projet> Projets { get; set; } = new();
         [ObservableProperty]
         private Projet selectedProjet;
@@ -59,44 +59,15 @@ namespace TaskMaster.ViewModels
         {
             try
             {
-                // Désactivez le suivi des entités pour éviter les conflits
-                _context.ChangeTracker.Clear();
+                // Validez les commentaires avant sauvegarde
+                var commentairesValides = Commentaires
+                    .Where(c => !string.IsNullOrEmpty(c.Contenu) && c.Id_Auteur > 0)
+                    .ToList();
 
-                // Mettez à jour les sous-tâches
-                foreach (var stViewModel in SousTaches)
+                Task.Commentaires.Clear();
+                foreach (var c in commentairesValides)
                 {
-                    var existingSubTask = Task.SousTaches.FirstOrDefault(st => st.Id_SubTask == stViewModel.Id_SubTask);
-                    if (existingSubTask != null)
-                    {
-                        existingSubTask.Titre = stViewModel.Titre;
-                        existingSubTask.Echeance = stViewModel.Echeance;
-                        _context.Entry(existingSubTask).State = EntityState.Modified;
-                    }
-                    else
-                    {
-                        Task.SousTaches.Add(new SubTask
-                        {
-                            Titre = stViewModel.Titre,
-                            Echeance = stViewModel.Echeance,
-                            Id_TaskParent = Task.Id_Task
-                        });
-                    }
-                }
-
-                // Mettez à jour les commentaires
-                foreach (var cViewModel in Commentaires)
-                {
-                    var commentaireExistant = Task.Commentaires.FirstOrDefault(c => c.Contenu == cViewModel.Contenu);
-                    if (commentaireExistant == null)
-                    {
-                        Task.Commentaires.Add(new Commentaire
-                        {
-                            Contenu = cViewModel.Contenu,
-                            Id_Task = Task.Id_Task,
-                            Id_Auteur = 1, // REMPLACEZ PAR UN ID VALIDE
-                            DateCreation = DateTime.Now
-                        });
-                    }
+                    Task.Commentaires.Add(c);
                 }
 
                 await _context.SaveChangesAsync();
@@ -121,9 +92,18 @@ namespace TaskMaster.ViewModels
         [RelayCommand]
         private void AjouterCommentaire()
         {
-            Commentaires.Add(new CommentViewModel
+            if (SelectedUtilisateur == null)
             {
-                Contenu = ""
+                Shell.Current.DisplayAlert("Erreur", "Aucun utilisateur sélectionné", "OK");
+                return;
+            }
+
+            Commentaires.Add(new Commentaire
+            {
+                Contenu = "",
+                Id_Task = Task.Id_Task,
+                Id_Auteur = SelectedUtilisateur.Id,
+                DateCreation = DateTime.Now
             });
         }
 
@@ -144,18 +124,16 @@ namespace TaskMaster.ViewModels
         }
 
         [RelayCommand]
-        private void SupprimerCommentaire(CommentViewModel commentaire)
+        private void SupprimerCommentaire(Commentaire commentaire)
         {
             if (commentaire != null)
             {
-                // 1. Supprimez le CommentViewModel de la liste observable
                 Commentaires.Remove(commentaire);
-
-                // 2. Trouvez et marquez le Commentaire associé pour suppression
-                var commentaireExistant = Task.Commentaires.FirstOrDefault(c => c.Contenu == commentaire.Contenu && c.Id_Auteur == 1); // Adaptez Id_Auteur si nécessaire
-                if (commentaireExistant != null)
+                
+                // Si le commentaire est déjà en base de données, marquez-le pour suppression
+                if (commentaire.Id_Commentaire != 0)
                 {
-                    _context.Commentaires.Remove(commentaireExistant); // Suppression explicite du contexte
+                    _context.Commentaires.Remove(commentaire);
                 }
             }
         }
@@ -181,7 +159,7 @@ namespace TaskMaster.ViewModels
             {
                 foreach (var c in value.Commentaires)
                 {
-                    Commentaires.Add(new CommentViewModel
+                    Commentaires.Add(new Commentaire
                     {
                         Contenu = c.Contenu
                     });
@@ -236,14 +214,19 @@ namespace TaskMaster.ViewModels
 
         public async Task InitialiserAsync(int taskId)
         {
-            await ChargerProjets();
             await ChargerUtilisateurs();
+            await ChargerProjets();
 
             Task = await _context.Tasks
                 .Include(t => t.SousTaches)
                 .Include(t => t.Commentaires)
                 .FirstOrDefaultAsync(t => t.Id_Task == taskId);
-            // OnTaskChanged sera appelé automatiquement
+
+            // Assignez l'utilisateur par défaut si nécessaire
+            if (Task.Id_Realisateur != null)
+            {
+                SelectedUtilisateur = Utilisateurs.FirstOrDefault(u => u.Id == Task.Id_Realisateur);
+            }
         }
     }
 }

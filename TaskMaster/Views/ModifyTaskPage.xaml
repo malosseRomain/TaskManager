@@ -101,10 +101,7 @@
                                         <Button Grid.Column="1"
                                                 Text="×"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ModifyTaskViewModel}}, Path=SupprimerCommentaireCommand}"
-                                                CommandParameter="{Binding .}"
-                                                WidthRequest="40"
-                                                BackgroundColor="Red"
-                                                TextColor="White"/>
+                                                CommandParameter="{Binding .}"/>
                                     </Grid>
                                 </Frame>
                             </DataTemplate>

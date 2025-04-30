@@ -76,12 +76,7 @@ namespace TaskMaster.ViewModels
 
         private async Task ChargerProjets()
         {
-            var currentUser = _authService.CurrentUser;
-            if (currentUser == null) return;
-
-            var projets = await _context.Projets
-                .Where(p => p.Id_Createur == currentUser.Id_User)
-                .ToListAsync();
+            var projets = await _context.Projets.ToListAsync();
 
             Projets.Clear();
             foreach (var projet in projets)
@@ -168,7 +163,7 @@ namespace TaskMaster.ViewModels
                     Statut = Enum.Parse<TaskStatus>(SelectedStatut.Value),
                     DateCreation = DateTime.Now,
                     Id_Auteur = currentUser.Id_User,
-                    Id_Realisateur = currentUser.Id_User,
+                    Id_Realisateur = SelectedUtilisateur?.Id ?? currentUser.Id_User,
                     Etiquettes = Etiquettes,
                     Id_Projet = SelectedProjet?.Id_Projet,
                     SousTaches = SousTaches.Select(st => new SubTask

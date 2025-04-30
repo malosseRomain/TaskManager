@@ -69,6 +69,15 @@ namespace TaskMaster.ViewModels
                     .Where(c => !string.IsNullOrEmpty(c.Contenu) && Utilisateurs.Any(u => u.Id == c.Id_Auteur))
                     .ToList();
 
+                // 3. Mettez à jour l'ID du réalisateur
+                if (SelectedUtilisateur != null)
+                {
+                    Task.Id_Realisateur = SelectedUtilisateur.Id;
+                }
+
+                // 4. Mettez à jour l'ID du projet
+                Task.Id_Projet = SelectedProjet?.Id_Projet;
+
                 await _context.SaveChangesAsync();
                 await Shell.Current.GoToAsync("..");
             }
@@ -236,6 +245,7 @@ namespace TaskMaster.ViewModels
             Task = await _context.Tasks
                 .Include(t => t.SousTaches)
                 .Include(t => t.Commentaires)
+                .Include(t => t.Projet)
                 .FirstOrDefaultAsync(t => t.Id_Task == taskId);
 
             // Assignez l'utilisateur par défaut si la tâche en a un

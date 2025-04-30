@@ -66,12 +66,9 @@ L'application utilise les entités suivantes :
 │   ├── /SubTask.cs                # Entité sous-tâche
 │   ├── /Projet.cs                 # Entité projet
 │   └── /Commentaire.cs            # Entité commentaire
-│
-├── /TaskMaster (Projet MAUI)      # Interface utilisateur
-│   ├── /Views                     # Pages MAUI (XAML)
-│   ├── /ViewModels                # ViewModels pour chaque page
-│   ├── /Resources                 # Ressources (images, styles)
-│   └── /Converters                # Converters pour la liaison de données
+
+├── /Views                     # Pages MAUI (XAML)
+└── /ViewModels                # ViewModels pour chaque page
 ```
 
 ## Installation et configuration

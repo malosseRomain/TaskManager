@@ -1,8 +1,55 @@
 # TaskMaster
 
-Projet de développement avancé R6.A.05
+Projet de développement avancé R6.A.05 - Application de gestion de tâches multiplateforme
 
-## Organisation des fichiers
+## Description
+
+TaskMaster est une application de gestion de tâches développée avec .NET MAUI, permettant aux utilisateurs de gérer efficacement leurs tâches et projets. L'application suit une architecture MVVM et utilise Entity Framework Core avec MySQL pour la persistance des données.
+
+## Fonctionnalités principales
+
+- 🔐 Authentification et gestion des utilisateurs
+- 📝 Création, modification et suppression de tâches
+- 📋 Gestion des sous-tâches, étiquettes et commentaires
+- 📊 Suivi de l'évolution des tâches via différents statuts
+- 📅 Visualisation des tâches par priorité, échéance ou catégorie
+- 👥 Attribution de tâches à d'autres utilisateurs
+- 📂 Organisation des tâches par projets
+
+## Architecture technique
+
+### Backend
+
+- **Base de données**: MySQL 8.0
+- **ORM**: Entity Framework Core
+- **Pattern**: MVVM (Model-View-ViewModel)
+- **Framework**: .NET MAUI
+
+### Modèle de données
+
+L'application utilise les entités suivantes :
+
+- `TaskItem`: Tâche principale avec titre, description, dates, statut, priorité, etc.
+- `SubTask`: Sous-tâches associées à une tâche principale
+- `User`: Utilisateurs de l'application
+- `Projet`: Projets regroupant des tâches
+- `Commentaire`: Commentaires sur les tâches
+
+### Statuts des tâches
+
+- À faire
+- En cours
+- Terminée
+- Annulée
+
+### Priorités
+
+- Basse
+- Moyenne
+- Haute
+- Critique
+
+## Organisation du projet
 
 ```
 /TaskMaster
@@ -13,23 +60,79 @@ Projet de développement avancé R6.A.05
 │   ├── /Migrations                 # Dossier pour les migrations de la base de données
 │   └── /Services                   # Services métiers (CRUD, logique métier)
 │
-├── /Models                          # Contient les entités de la base de données (EF Core)
-│   ├── /Task.cs                    # Entité Task
-│   ├── /User.cs                    # Entité User
-│   └── /SubTask.cs                 # Entité SubTask
+├── /Models                         # Entités de la base de données
+│   ├── /TaskItem.cs               # Entité principale des tâches
+│   ├── /User.cs                   # Entité utilisateur
+│   ├── /SubTask.cs                # Entité sous-tâche
+│   ├── /Projet.cs                 # Entité projet
+│   └── /Commentaire.cs            # Entité commentaire
 │
-├── /TaskMaster (Projet MAUI)       # Interface utilisateur (Frontend)
-│   ├── /Views                       # Pages MAUI (XAML) représentant l'interface utilisateur
-│   ├── /ViewModels                  # ViewModels pour chaque page
-│   ├── /Resources                   # Ressources (images, styles, etc.)
-│   ├── /Converters                  # Converters pour la liaison de données
-│   └── /App.xaml.cs                 # Point d'entrée de l'application
-│
-├── /Properties                      # Contient les fichiers de configuration (ne pas toucher)
-├── /Platforms                       # Contient des spécificités de la plateforme (iOS, Android, etc.)
-├── /TaskMaster.sln                 # Fichier de solution
-└── /obj                             # Dossier de compilation (ne pas toucher)
+├── /TaskMaster (Projet MAUI)      # Interface utilisateur
+│   ├── /Views                     # Pages MAUI (XAML)
+│   ├── /ViewModels                # ViewModels pour chaque page
+│   ├── /Resources                 # Ressources (images, styles)
+│   └── /Converters                # Converters pour la liaison de données
 ```
+
+## Installation et configuration
+
+1. Cloner le dépôt
+2. Configurer la base de données MySQL (voir docker-compose.yaml)
+3. Exécuter les migrations Entity Framework
+4. Lancer l'application
+
+## Développement
+
+Le projet suit une méthodologie Agile/Scrum avec des sprints hebdomadaires. La gestion du projet est assurée via GitHub Boards.
+
+## Technologies utilisées
+
+- .NET MAUI pour l'interface utilisateur multiplateforme
+- Entity Framework Core avec MySQL (Pomelo.EntityFrameworkCore.MySql)
+- CommunityToolkit.MVVM pour l'implémentation du pattern MVVM
+- GitHub pour le versionnement et la gestion de projet
+
+## Implémentation des fonctionnalités
+
+### Authentification et gestion des utilisateurs
+
+- Inscription et connexion via `AuthService`
+- Hachage sécurisé des mots de passe avec BCrypt
+- Gestion des sessions utilisateur
+- Validation des champs de formulaire
+
+### Gestion des tâches
+
+- CRUD complet des tâches via `TaskService`
+- Système de sous-tâches avec gestion des statuts
+- Attribution des tâches à des utilisateurs (auteur et réalisateur)
+- Association des tâches à des projets
+- Gestion des étiquettes et commentaires
+
+### Interface utilisateur
+
+- Navigation entre les pages avec `NavigationService`
+- Filtrage et tri des tâches par :
+  - Titre
+  - Priorité
+  - Échéance
+  - Catégorie
+- Affichage des statuts avec des converters
+- Interface responsive adaptée aux différentes plateformes
+
+### Gestion des projets
+
+- Création et visualisation des projets
+- Association des tâches aux projets
+- Vue détaillée des projets avec leurs tâches associées
+
+### Fonctionnalités de base
+
+- Création, modification et suppression de tâches
+- Gestion des sous-tâches
+- Système de commentaires
+- Attribution des tâches à d'autres utilisateurs
+- Organisation des tâches par projets
 
 ## Base de données
 
